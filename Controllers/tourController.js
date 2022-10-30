@@ -39,13 +39,17 @@ exports.getAllTours = async (req, res) => {
     // 2B) Advanced Filtering LESSON
     let queryStr = JSON.stringify(queryObj); // replace kullanabılmek adına objectki stringe donsuturduk
     queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`); // stringleri de normalde mongoDB operotur olan $gte $gt $lt vesaire bunları regular expressionlarla degıstırecegız
-    console.log(JSON.parse(queryStr));
+    // console.log(JSON.parse(queryStr));
 
     let query = Tour.find(JSON.parse(queryStr)); // Tour.find() bize bir query return edecek ve o query i birçok kez chain edebileceğiz
 
     // SORTING
     if (req.query.sort) {
-      query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
+      const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
+      // console.log(sortBy);
+      query = query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
+    } else {
+      query = query.sort('-createdAt'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek
     }
     // EXECUDE QUERY
     const tours = await query;
