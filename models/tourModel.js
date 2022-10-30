@@ -56,6 +56,7 @@ const tourSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+    select: false, // böylelikle kullancıya tour un ne zaman yaratıldıgını gızledık
   },
 
   startDates: [Date],

@@ -22,7 +22,7 @@ exports.getAllTours = async (req, res) => {
     console.log(req.query);
 
     // BUILD QUERY
-    // 1A) Filtering LESSON
+    // 1A) FILTERING LESSON
     const queryObj = { ...req.query };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
@@ -36,14 +36,14 @@ exports.getAllTours = async (req, res) => {
     // excludedFields.forEach(el => delete queryObj[el])
     // console.log(req.query, queryObj);
 
-    // 2B) Advanced Filtering LESSON
+    // 2B) ADVANCED FILTERING LESSON
     let queryStr = JSON.stringify(queryObj); // replace kullanabılmek adına objectki stringe donsuturduk
     queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`); // stringleri de normalde mongoDB operotur olan $gte $gt $lt vesaire bunları regular expressionlarla degıstırecegız
     // console.log(JSON.parse(queryStr));
 
     let query = Tour.find(JSON.parse(queryStr)); // Tour.find() bize bir query return edecek ve o query i birçok kez chain edebileceğiz
 
-    // SORTING
+    // SORTING LESSON
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
       // console.log(sortBy);
@@ -51,6 +51,15 @@ exports.getAllTours = async (req, res) => {
     } else {
       query = query.sort('-createdAt'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek
     }
+
+    // LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
+    }
+
     // EXECUDE QUERY
     const tours = await query;
 

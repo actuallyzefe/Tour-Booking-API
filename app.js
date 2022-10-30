@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 // console.log(process.env.NODE_ENV);
 
-// Database e save etmek için. save() kullandık bu bir promise return ederv e onu de then ile handle ettık ılerıde async awat de kullanabılırız
+// Database e save etmek için. save() kullandık bu bir promise return eder ve onu de then ile handle ettık ılerıde async awat de kullanabılırız
 // testTour
 //   .save()
 //   .then((doc) => {
