@@ -1,5 +1,7 @@
+'use strict';
+
 const fs = require('fs');
-const { request } = require('http');
+// const { request } = require('http');
 const Tour = require('./../models/tourModel');
 // const tours = JSON.parse(fs.readFileSync('./dev-data/data/tours-simple.json'));
 
