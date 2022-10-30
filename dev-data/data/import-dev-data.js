@@ -1,0 +1,58 @@
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const fs = require('fs');
+const Tour = require('./../../models/tourModel');
+dotenv.config({ path: './config.env' });
+
+const DB = process.env.DATABASE.replace(
+  '<password>',
+  process.env.DATABASE_PASSWORD
+);
+
+// .then() ile handle etmelıyız
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log('DB connection successful!'));
+
+// READ JSON FILE
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
+);
+
+// IMPORT DATA INTO DATABASE
+const importData = async () => {
+  try {
+    await Tour.create(tours);
+    console.log('Data Successfully loaded!');
+  } catch (err) {
+    console.log(err);
+  }
+  process.exit();
+};
+
+// DELETE ALL DATA FROM DATABASE
+const deleteData = async () => {
+  try {
+    await Tour.deleteMany();
+    console.log('Data Successfully deleted!');
+  } catch (err) {
+    console.log(err);
+  }
+  process.exit();
+};
+
+if (process.argv[2] === '--import') {
+  importData();
+} else if (process.argv[2] === '--delete') {
+  deleteData();
+}
+
+// BUG yukarıda kullandıgımız process.exit() i kullanırken dikkat etmemız gerekıyor boyle kucuk uyugulamalrda sıkıtnı olamayambılır ama ılerıde sıkıtnılar ıle karsılasabılırz
+//IMPORTANT Bu fonksıyonları export etemdgımız ıcın normalde call etmemız gerek ama onu da yapmayıp process.argv kullanarak termınalden halelttık
+// BUG process.exit()  termınalde kodu calıstırdaktan sonra otomatıkk olarak cıkacak ve tekrar işlemleri yapabilmemizi sağlayacak.
+console.log(process.argv);
