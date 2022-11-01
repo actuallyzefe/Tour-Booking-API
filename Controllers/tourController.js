@@ -1,6 +1,13 @@
 'use strict';
 
 const fs = require('fs');
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+}; // bu kısmın getAllTours dan önce olması önemli // IMPORTANT
+
 // const { request } = require('http');
 const Tour = require('./../models/tourModel');
 // const tours = JSON.parse(fs.readFileSync('./dev-data/data/tours-simple.json'));
