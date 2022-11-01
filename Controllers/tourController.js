@@ -28,6 +28,7 @@ exports.getAllTours = async (req, res) => {
     const queryObj = { ...req.query };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
+
     // IMPORTANT LESSON
     // STEP 1: We created a copy of the req.query using spread operator const queryObj = {...req.query}
 
@@ -45,22 +46,35 @@ exports.getAllTours = async (req, res) => {
 
     let query = Tour.find(JSON.parse(queryStr)); // Tour.find() bize bir query return edecek ve o query i birçok kez chain edebileceğiz
 
-    // SORTING LESSON
+    // 2) SORTING LESSON
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
       // console.log(sortBy);
       query = query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
     } else {
-      query = query.sort('-createdAt'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek
+      query = query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
     }
 
-    // LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
+    // 3) LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
       query = query.select(fields);
     } else {
       query = query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
     }
+
+    // 4) PAGINATION LESSON => 1-10 a kadar olan makaleler sayfa1 / 11-20 sayfa 2,/ 21-30 sayfa 3
+    const page = req.query.page * 1 /*stringden number a çevirdik*/ || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error("This page doesn't exist");
+    }
+
+    // burada da kullanıcının hangı sayfayı ıstedıgınde yapıalcak formulu uyguladık
+    query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
 
     // EXECUDE QUERY
     const tours = await query;
