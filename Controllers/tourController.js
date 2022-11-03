@@ -48,6 +48,29 @@ class APIFeatures {
     }
     return this;
   }
+  limitFields() {
+    if (this.queryString.fields) {
+      const fields = this.queryString.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
+      this.query = this.query.select(fields);
+    } else {
+      this.query = this.query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
+    }
+    return this;
+  }
+
+  paginate() {
+    const page = this.queryString.page * 1 /*stringden number a çevirdik*/ || 1;
+    const limit = this.queryString.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+
+    // if (this.queryString.page) {
+    //   const numTours = await Tour.countDocuments(); // eğer ki var olan document sayısından fazla bir şey istendiyse error verecegız
+    //   if (skip >= numTours) throw new Error("This page doesn't exist");
+    // }
+
+    // burada da kullanıcının hangı sayfayı ıstedıgınde yapıalcak formulu uyguladık
+    query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
+  }
 }
 
 // TOURS
@@ -91,25 +114,25 @@ exports.getAllTours = async (req, res) => {
     // }
 
     // 3) LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
-    }
+    // if (req.query.fields) {
+    //   const fields = req.query.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
+    //   query = query.select(fields);
+    // } else {
+    //   query = query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
+    // }
 
     // 4) PAGINATION LESSON => 1-10 a kadar olan makaleler sayfa1 / 11-20 sayfa 2,/ 21-30 sayfa 3
-    const page = req.query.page * 1 /*stringden number a çevirdik*/ || 1;
-    const limit = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limit;
+    // const page = req.query.page * 1 /*stringden number a çevirdik*/ || 1;
+    // const limit = req.query.limit * 1 || 100;
+    // const skip = (page - 1) * limit;
 
-    if (req.query.page) {
-      const numTours = await Tour.countDocuments(); // eğer ki var olan document sayısından fazla bir şey istendiyse error verecegız
-      if (skip >= numTours) throw new Error("This page doesn't exist");
-    }
+    // if (req.query.page) {
+    //   const numTours = await Tour.countDocuments(); // eğer ki var olan document sayısından fazla bir şey istendiyse error verecegız
+    //   if (skip >= numTours) throw new Error("This page doesn't exist");
+    // }
 
-    // burada da kullanıcının hangı sayfayı ıstedıgınde yapıalcak formulu uyguladık
-    query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
+    // // burada da kullanıcının hangı sayfayı ıstedıgınde yapıalcak formulu uyguladık
+    // query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
 
     // EXECUDE QUERY
     const features = new APIFeatures(Tour.find(), req.query).filter().sort();
