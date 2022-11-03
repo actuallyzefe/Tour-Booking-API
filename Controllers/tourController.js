@@ -25,7 +25,8 @@ const Tour = require('./../models/tourModel');
 // };
 
 // TOURS
-// REFACTORING GET data get etmei mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
+// REFACTORING GET data get etmeyi mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
+
 exports.getAllTours = async (req, res) => {
   try {
     console.log(req.query);
