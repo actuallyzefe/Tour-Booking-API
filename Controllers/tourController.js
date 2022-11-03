@@ -1,8 +1,16 @@
 'use strict';
+
+const fs = require('fs');
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+}; // bu kısmın getAllTours dan önce olması önemli // IMPORTANT
+
 // const { request } = require('http');
 const Tour = require('./../models/tourModel');
 // const tours = JSON.parse(fs.readFileSync('./dev-data/data/tours-simple.json'));
-const APIFeatures = require('./../utils/apiFeatures');
 
 // GUARD GUARD GUARD GUARD
 // exports.checkId = (req, res, next, val) => {
@@ -16,19 +24,69 @@ const APIFeatures = require('./../utils/apiFeatures');
 //   next();
 // };
 
-exports.aliasTopTours = (req, res, next) => {
-  req.query.limit = '5';
-  req.query.sort = '-ratingsAverage,price';
-  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
-  next();
-}; // bu kısmın getAllTours dan önce olması önemli // IMPORTANT
+// REFACTORING IMPORTANT
+class APIFeatures {
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
+  }
 
-// REFACTORING
+  filter() {
+    const queryObj = { ...this.queryString };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    // 1B) Advanced filtering
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    this.query = this.query.find(JSON.parse(queryStr));
+
+    return this;
+  }
+
+  sort() {
+    if (this.queryString.sort) {
+      const sortBy = this.queryString.sort.split(',').join(' ');
+      this.query = this.query.sort(sortBy);
+    } else {
+      this.query = this.query.sort('-createdAt');
+    }
+
+    return this;
+  }
+
+  limitFields() {
+    if (this.queryString.fields) {
+      const fields = this.queryString.fields.split(',').join(' ');
+      this.query = this.query.select(fields);
+    } else {
+      this.query = this.query.select('-__v');
+    }
+
+    return this;
+  }
+
+  paginate() {
+    const page = this.queryString.page * 1 || 1;
+    const limit = this.queryString.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+
+    this.query = this.query.skip(skip).limit(limit);
+
+    return this;
+  }
+}
+// EXECUDE QUERY
+const features = new APIFeatures(Tour.find(), req.query)
+  .filter()
+  .sort()
+  .limitFields()
+  .paginate();
+const tours = await features.query;
 
 // TOURS
-// REFACTORING GET data get etmeyi mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
-
-// REFACTORING IMPORTANT // olusturdugumuz tum methodları bir class a aldık ve farklı bir soyaya tasıyıp burada require ettik
+// REFACTORING GET data get etmei mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
 exports.getAllTours = async (req, res) => {
   try {
     console.log(req.query);
@@ -39,24 +97,24 @@ exports.getAllTours = async (req, res) => {
     // const excludedFields = ['page', 'sort', 'limit', 'fields'];
     // excludedFields.forEach((el) => delete queryObj[el]);
 
-    // IMPORTANT LESSON
-    // STEP 1: We created a copy of the req.query using spread operator const queryObj = {...req.query}
+    // // IMPORTANT LESSON
+    // // STEP 1: We created a copy of the req.query using spread operator const queryObj = {...req.query}
 
-    // STEP 2: We created an array of object that we want to exclude from the query strings const excludedFields = ['page', 'sort', 'limit', 'fileds']
+    // // STEP 2: We created an array of object that we want to exclude from the query strings const excludedFields = ['page', 'sort', 'limit', 'fileds']
 
-    // STEP 3: We have to loop through the array to exclude what we don't want to consider.
+    // // STEP 3: We have to loop through the array to exclude what we don't want to consider.
 
-    // excludedFields.forEach(el => delete queryObj[el])
-    // console.log(req.query, queryObj);
+    // // excludedFields.forEach(el => delete queryObj[el])
+    // // console.log(req.query, queryObj);
 
-    // 2B) ADVANCED FILTERING LESSON
+    // // 2B) ADVANCED FILTERING LESSON
     // let queryStr = JSON.stringify(queryObj); // replace kullanabılmek adına objectki stringe donsuturduk
     // queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`); // stringleri de normalde mongoDB operotur olan $gte $gt $lt vesaire bunları regular expressionlarla degıstırecegız
-    // console.log(JSON.parse(queryStr));
+    // // console.log(JSON.parse(queryStr));
 
     // let query = Tour.find(JSON.parse(queryStr)); // Tour.find() bize bir query return edecek ve o query i birçok kez chain edebileceğiz
 
-    // 2) SORTING LESSON
+    // // 2) SORTING LESSON
     // if (req.query.sort) {
     //   const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
     //   // console.log(sortBy);
@@ -65,7 +123,7 @@ exports.getAllTours = async (req, res) => {
     //   query = query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
     // }
 
-    // 3) LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
+    // // 3) LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
     // if (req.query.fields) {
     //   const fields = req.query.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
     //   query = query.select(fields);
@@ -73,7 +131,7 @@ exports.getAllTours = async (req, res) => {
     //   query = query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
     // }
 
-    // 4) PAGINATION LESSON => 1-10 a kadar olan makaleler sayfa1 / 11-20 sayfa 2,/ 21-30 sayfa 3
+    // // 4) PAGINATION LESSON => 1-10 a kadar olan makaleler sayfa1 / 11-20 sayfa 2,/ 21-30 sayfa 3
     // const page = req.query.page * 1 /*stringden number a çevirdik*/ || 1;
     // const limit = req.query.limit * 1 || 100;
     // const skip = (page - 1) * limit;
@@ -85,13 +143,6 @@ exports.getAllTours = async (req, res) => {
 
     // // burada da kullanıcının hangı sayfayı ıstedıgınde yapıalcak formulu uyguladık
     // query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
-
-    // EXECUDE QUERY
-    const features = new APIFeatures(Tour.find(), req.query).filter();
-    // .sort()
-    // .limitFields()
-    // .paginate();
-    const tours = await features.query;
 
     // console a yansıttgıız req.query aslında tıpkı bıızm kendı elımızle yazıdıgımız objecte benzedıgnden boyle yapıp da kullanabıliriz
     // bu bilgiyi ise postmanden çekiyor
