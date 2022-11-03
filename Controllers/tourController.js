@@ -1,13 +1,4 @@
 'use strict';
-
-const fs = require('fs');
-exports.aliasTopTours = (req, res, next) => {
-  req.query.limit = '5';
-  req.query.sort = '-ratingsAverage,price';
-  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
-  next();
-}; // bu kısmın getAllTours dan önce olması önemli // IMPORTANT
-
 // const { request } = require('http');
 const Tour = require('./../models/tourModel');
 // const tours = JSON.parse(fs.readFileSync('./dev-data/data/tours-simple.json'));
@@ -24,18 +15,54 @@ const Tour = require('./../models/tourModel');
 //   next();
 // };
 
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+}; // bu kısmın getAllTours dan önce olması önemli // IMPORTANT
+
+class APIFeatures {
+  constructor(query, queryString) {
+    const query = query;
+    const queryString = queryString;
+  }
+  filter() {
+    const queryObj = { ...this.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`);
+    this.query.find(JSON.parse(queryStr));
+    // let query = Tour.find(JSON.parse(queryStr));
+    return this;
+  }
+
+  sort() {
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
+      // console.log(sortBy);
+      query = query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
+    } else {
+      query = query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
+    }
+    return this;
+  }
+}
+
 // TOURS
 // REFACTORING GET data get etmeyi mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
 
+// REFACTORING IMPORTANT // olusturdugumuz tum methodları bir class a aldık ve farklı bir soyaya tasıyıp burada require ettik
 exports.getAllTours = async (req, res) => {
   try {
     console.log(req.query);
 
     // BUILD QUERY
     // 1A) FILTERING LESSON
-    const queryObj = { ...req.query };
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach((el) => delete queryObj[el]);
+    // const queryObj = { ...req.query };
+    // const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    // excludedFields.forEach((el) => delete queryObj[el]);
 
     // IMPORTANT LESSON
     // STEP 1: We created a copy of the req.query using spread operator const queryObj = {...req.query}
@@ -48,20 +75,20 @@ exports.getAllTours = async (req, res) => {
     // console.log(req.query, queryObj);
 
     // 2B) ADVANCED FILTERING LESSON
-    let queryStr = JSON.stringify(queryObj); // replace kullanabılmek adına objectki stringe donsuturduk
-    queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`); // stringleri de normalde mongoDB operotur olan $gte $gt $lt vesaire bunları regular expressionlarla degıstırecegız
+    // let queryStr = JSON.stringify(queryObj); // replace kullanabılmek adına objectki stringe donsuturduk
+    // queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`); // stringleri de normalde mongoDB operotur olan $gte $gt $lt vesaire bunları regular expressionlarla degıstırecegız
     // console.log(JSON.parse(queryStr));
 
-    let query = Tour.find(JSON.parse(queryStr)); // Tour.find() bize bir query return edecek ve o query i birçok kez chain edebileceğiz
+    // let query = Tour.find(JSON.parse(queryStr)); // Tour.find() bize bir query return edecek ve o query i birçok kez chain edebileceğiz
 
     // 2) SORTING LESSON
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
-      // console.log(sortBy);
-      query = query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
-    } else {
-      query = query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
-    }
+    // if (req.query.sort) {
+    //   const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
+    //   // console.log(sortBy);
+    //   query = query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
+    // } else {
+    //   query = query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
+    // }
 
     // 3) LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
     if (req.query.fields) {
@@ -85,7 +112,8 @@ exports.getAllTours = async (req, res) => {
     query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
 
     // EXECUDE QUERY
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), req.query).filter();
+    const tours = await features.query;
 
     // console a yansıttgıız req.query aslında tıpkı bıızm kendı elımızle yazıdıgımız objecte benzedıgnden boyle yapıp da kullanabıliriz
     // bu bilgiyi ise postmanden çekiyor
