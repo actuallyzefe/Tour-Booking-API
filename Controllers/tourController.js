@@ -39,12 +39,12 @@ class APIFeatures {
   }
 
   sort() {
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
+    if (this.queryString.sort) {
+      const sortBy = this.queryString.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
       // console.log(sortBy);
-      query = query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
+      this.query = this.query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
     } else {
-      query = query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
+      this.query = this.query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
     }
     return this;
   }
@@ -112,7 +112,7 @@ exports.getAllTours = async (req, res) => {
     query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
 
     // EXECUDE QUERY
-    const features = new APIFeatures(Tour.find(), req.query).filter();
+    const features = new APIFeatures(Tour.find(), req.query).filter().sort();
     const tours = await features.query;
 
     // console a yansıttgıız req.query aslında tıpkı bıızm kendı elımızle yazıdıgımız objecte benzedıgnden boyle yapıp da kullanabıliriz
