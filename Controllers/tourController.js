@@ -2,6 +2,7 @@
 // const { request } = require('http');
 const Tour = require('./../models/tourModel');
 // const tours = JSON.parse(fs.readFileSync('./dev-data/data/tours-simple.json'));
+const APIFeatures = require('./../utils/apiFeatures');
 
 // GUARD GUARD GUARD GUARD
 // exports.checkId = (req, res, next, val) => {
@@ -22,56 +23,7 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 }; // bu kısmın getAllTours dan önce olması önemli // IMPORTANT
 
-class APIFeatures {
-  constructor(query, queryString) {
-    const query = query;
-    const queryString = queryString;
-  }
-  filter() {
-    const queryObj = { ...this.query };
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach((el) => delete queryObj[el]);
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`);
-    this.query.find(JSON.parse(queryStr));
-    // let query = Tour.find(JSON.parse(queryStr));
-    return this;
-  }
-
-  sort() {
-    if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
-      // console.log(sortBy);
-      this.query = this.query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
-    } else {
-      this.query = this.query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
-    }
-    return this;
-  }
-  limitFields() {
-    if (this.queryString.fields) {
-      const fields = this.queryString.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
-      this.query = this.query.select(fields);
-    } else {
-      this.query = this.query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
-    }
-    return this;
-  }
-
-  paginate() {
-    const page = this.queryString.page * 1 /*stringden number a çevirdik*/ || 1;
-    const limit = this.queryString.limit * 1 || 100;
-    const skip = (page - 1) * limit;
-
-    // if (this.queryString.page) {
-    //   const numTours = await Tour.countDocuments(); // eğer ki var olan document sayısından fazla bir şey istendiyse error verecegız
-    //   if (skip >= numTours) throw new Error("This page doesn't exist");
-    // }
-
-    // burada da kullanıcının hangı sayfayı ıstedıgınde yapıalcak formulu uyguladık
-    query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
-  }
-}
+// REFACTORING
 
 // TOURS
 // REFACTORING GET data get etmeyi mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
@@ -135,7 +87,10 @@ exports.getAllTours = async (req, res) => {
     // query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
 
     // EXECUDE QUERY
-    const features = new APIFeatures(Tour.find(), req.query).filter().sort();
+    const features = new APIFeatures(Tour.find(), req.query).filter();
+    // .sort()
+    // .limitFields()
+    // .paginate();
     const tours = await features.query;
 
     // console a yansıttgıız req.query aslında tıpkı bıızm kendı elımızle yazıdıgımız objecte benzedıgnden boyle yapıp da kullanabıliriz
