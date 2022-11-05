@@ -61,6 +61,10 @@ const tourSchema = new mongoose.Schema({
 
   startDates: [Date],
 });
+
+// Virtual Properties
+tourSchema.virtual('durationWeeks');
+
 // Burada oluştududğumuz şemalara uygun documentler oluşturduk
 const Tour = mongoose.model('Tour', tourSchema);
 
