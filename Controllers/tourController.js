@@ -305,6 +305,12 @@ exports.getToursStats = async (req, res) => {
         },
       },
     ]);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
   } catch (err) {
     res.status(404).json({
       status: 'fail',

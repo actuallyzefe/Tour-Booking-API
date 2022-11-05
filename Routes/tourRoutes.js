@@ -11,6 +11,8 @@ router
   .get(tourController.aliasTopTours, tourController.getAllTours);
 // en ucuz en iyi 5 tur u sıralamak ısteyen bırısı buna tıkladıgında tourController.js dosyamızda export ettıgımız calısacak
 // onu da middlewre olarak ekledık ?
+
+router.route('/tour-stats').get(tourController.getToursStats);
 router
   .route('/')
   .get(tourController.getAllTours)
