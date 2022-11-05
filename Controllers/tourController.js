@@ -310,6 +310,9 @@ exports.getToursStats = async (req, res) => {
       {
         $sort: { avgPrice: 1 }, // burada sorting ederken dikkat etmemız gereken sey groupda tanımaldıgımız field nameleri kullanak olacak // avgPrice: 1 => gittikçe artan sıralam seklı ıcın
       },
+      // {
+      //   $match: { _id: { $ne: 'easy' } }, // burada da repeat stage yapılabıldıgını goterdık ve $ne => not ecual => easy olan datayı gosterme
+      // },
     ]);
     res.status(200).json({
       status: 'success',
