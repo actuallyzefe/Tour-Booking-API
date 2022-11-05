@@ -88,14 +88,22 @@ tourSchema.virtual('durationWeeks').get(function () {
 // durationWeeks i HİÇBİR ŞEKİLDE BİR QUERY OLARAK KULLANAMYIZ CUNKU BU DATABASEIMIZDE YER ALAN BİR ŞEY DEGIL
 
 // LESSON
+// mongooseda da middlewarelar vardır (middleware => iki event arası olayları kontrol etmek)
 // Document Middleware runs before .save() nad .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
+tourSchema.pre('save', (next) => {
+  console.log('AYNI HOOKTA 1DEN FAZLA PRE VE POST MWSİ OLA BİLİR');
+  next();
+});
+
+// post middlewareları ise butun pre mwler çalıştıktan sonra çalışacaktır.
+// ve post mwler onceden biten finishd documantları parametre olarak alabilirler
 tourSchema.post('save', function (doc, next) {
-  console.log(doc);
+  console.log(doc); // kaydedilen dokumanın detaylarını konsolda goruyoruz (this.slug ile başlyaanda yarattık postmanden de uyguladık)
   next();
 });
 
