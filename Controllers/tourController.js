@@ -290,7 +290,7 @@ exports.deleteTour = async (req, res) => {
 // stages object şeklinde yazılır ve başlarına $ konulur
 exports.getToursStats = async (req, res) => {
   try {
-    const stats = Tour.aggregate([
+    const stats = await Tour.aggregate([
       {
         $match: { ratingsAverage: { $gte: 4.5 } }, // match stage i filter gibidir ve genelde önce yazılır
       },
@@ -298,6 +298,8 @@ exports.getToursStats = async (req, res) => {
         $group: {
           // group ise accumulatorleri kullanarak dokumanları grupluyor
           _id: null, // first thing always need to specify,this is where we gonna specify waht we want the group by. // Null yapma sebebimiz he rşeyi bir grupta toplamak ıstememız
+          numTours: { $sum: 1 },
+          numRatings: { $sum: 'ratingsQuantity' },
           avgRating: { $avg: '$ratingsAverage' }, // $avg mongoDB özel averaj hesaplama operatoru içine de neyın averajını almak sıtedıgımızı " " içinde yazıyoruz
           avgPrice: { $avg: '$price' },
           minPrice: { $min: '$price' },
