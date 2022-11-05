@@ -307,6 +307,9 @@ exports.getToursStats = async (req, res) => {
           maxPrice: { $max: '$price' },
         },
       },
+      {
+        $sort: { avgPrice: 1 }, // burada sorting ederken dikkat etmemız gereken sey groupda tanımaldıgımız field nameleri kullanak olacak // avgPrice: 1 => gittikçe artan sıralam seklı ıcın
+      },
     ]);
     res.status(200).json({
       status: 'success',
