@@ -347,7 +347,20 @@ exports.getMonthlyPlan = async (req, res) => {
       {
         $group: {
           _id: { $month: '$startDates' }, // $month mongoDB date opeartoru => bunun hemen bır ustude yarattıgımız datelerden "MONTH"u seçip alıyor
+          numTourStarts: { $sum: 1 }, // hangi ayda kaç tane dur oldugunu gosterıyor ve ona gore 1 eklıyor
+          tours: { $push: '$name' }, // Hangi ayda hangi turların oldugunu gosterdık
         },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      {
+        $project: {
+          _id: 0, // 1 olursa id gözükecek 0 da gözükmeyecek
+        },
+      },
+      {
+        $sort: { numTourStarts: -1 }, // bir ayda en çok tura sahip olanın gozukmesını sapladık
       },
     ]);
 
