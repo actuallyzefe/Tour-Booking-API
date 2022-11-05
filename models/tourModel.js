@@ -1,4 +1,7 @@
 // const { string } = require('i/lib/util');
+
+const slugify = require('slugify');
+
 const mongoose = require('mongoose');
 // database imizi mongoose a express ile bağladıktan sonra Model oluştuduk
 // Tıpkı OOP js gibi class oluşturur gibi yaptık bir şema oluşturduk
@@ -78,8 +81,13 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
-// IMPORTANT IMPORTANT IMPORTANTS
+// IMPORTANT IMPORTANT IMPORTANT
 // durationWeeks i HİÇBİR ŞEKİLDE BİR QUERY OLARAK KULLANAMYIZ CUNKU BU DATABASEIMIZDE YER ALAN BİR ŞEY DEGIL
+
+// Document Middleware runs before .save() nad .create()
+tourSchema.pre('save', function () {
+  console.log(this);
+});
 
 // Burada oluştududğumuz şemalara uygun documentler oluşturduk
 const Tour = mongoose.model('Tour', tourSchema);

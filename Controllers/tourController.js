@@ -205,10 +205,15 @@ exports.getSpesificTour = async (req, res) => {
 
 // REFACTORING POST
 exports.createTour = async (req, res) => {
-  // Daha çncesinde classlara benzer sekılde şemalar olusturup onalra gore de documentler olusturmustuk
-  // şimdi onun daha basit halini görecegız
+  // // Daha çncesinde classlara benzer sekılde şemalar olusturup onalra gore de documentler olusturmustuk
+  //   // şimdi onun daha basit halini görecegız
+  //   try {
+  //     const newTour = await Tour.create(req.body); // Bu fonksıyon bir promise donduurr bunu then ile handle etmek yerıne butun fonskıyonu async await fonkısyonu halıne getırdık
   try {
-    const newTour = await Tour.create(req.body); // Bu fonksıyon bir promise donduurr bunu then ile handle etmek yerıne butun fonskıyonu async await fonkısyonu halıne getırdık
+    // const newTour = new Tour({})
+    // newTour.save()
+
+    const newTour = await Tour.create(req.body);
 
     res.status(201).json({
       status: 'success',
@@ -218,23 +223,23 @@ exports.createTour = async (req, res) => {
     });
   } catch (err) {
     res.status(400).json({
-      status: 'Fail',
-      message: 'Invaild data sent! ',
+      status: 'fail',
+      message: err,
     });
   }
-  // const newId = tours[tours.length - 1].id + 1;
-  // const newTour = Object.assign({ id: newId }, req.body);
-  // tours.push(newTour);
-  // // yeni datamızı yarattık sımdı bunu dosyanın ıcıne yazmamız gerek
-  // fs.writeFile(
-  //   `./dev-data/data/tours-simple.json`,
-  //   JSON.stringify(tours),
-  //   (err) => {
-  //     // 201 dosyaya bir şey eklendı anlamına gelir
-  //   }
-  // );
-  // // console.log(newTour)
 };
+// const newId = tours[tours.length - 1].id + 1;
+// const newTour = Object.assign({ id: newId }, req.body);
+// tours.push(newTour);
+// // yeni datamızı yarattık sımdı bunu dosyanın ıcıne yazmamız gerek
+// fs.writeFile(
+//   `./dev-data/data/tours-simple.json`,
+//   JSON.stringify(tours),
+//   (err) => {
+//     // 201 dosyaya bir şey eklendı anlamına gelir
+//   }
+// );
+// // console.log(newTour)
 
 // REFACTORING UPDATE // PATCH
 exports.updateTour = async (req, res) => {
