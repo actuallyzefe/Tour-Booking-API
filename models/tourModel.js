@@ -12,6 +12,8 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
     },
+    slug: String,
+
     duration: {
       type: Number,
       require: [true, 'A tour must have duration'],
@@ -75,6 +77,7 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// LESSON
 // Virtual Properties => are basicly fields that we can define on our schema but tyhey will not be persisted
 // so they will not be saved into the database in order to save us some space there
 // gereksiz bilgileri değişirsen bile database de tutmak yararlı olmayacagğından bunları kullanıyoruz
@@ -84,9 +87,16 @@ tourSchema.virtual('durationWeeks').get(function () {
 // IMPORTANT IMPORTANT IMPORTANT
 // durationWeeks i HİÇBİR ŞEKİLDE BİR QUERY OLARAK KULLANAMYIZ CUNKU BU DATABASEIMIZDE YER ALAN BİR ŞEY DEGIL
 
+// LESSON
 // Document Middleware runs before .save() nad .create()
-tourSchema.pre('save', function () {
-  console.log(this);
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+tourSchema.post('save', function (doc, next) {
+  console.log(doc);
+  next();
 });
 
 // Burada oluştududğumuz şemalara uygun documentler oluşturduk
