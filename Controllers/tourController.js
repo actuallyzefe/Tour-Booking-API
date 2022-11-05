@@ -297,7 +297,8 @@ exports.getToursStats = async (req, res) => {
       {
         $group: {
           // group ise accumulatorleri kullanarak dokumanları grupluyor
-          _id: null, // first thing always need to specify,this is where we gonna specify waht we want the group by. // Null yapma sebebimiz he rşeyi bir grupta toplamak ıstememız
+          // _id: null, // first thing always need to specify,this is where we gonna specify waht we want the group by. // Null yapma sebebimiz he rşeyi bir grupta toplamak ıstememız
+          _id: '$difficulty', // böylelikle de yazdıgımız krıtere gore sıralandı
           numTours: { $sum: 1 },
           numRatings: { $sum: 'ratingsQuantity' },
           avgRating: { $avg: '$ratingsAverage' }, // $avg mongoDB özel averaj hesaplama operatoru içine de neyın averajını almak sıtedıgımızı " " içinde yazıyoruz
