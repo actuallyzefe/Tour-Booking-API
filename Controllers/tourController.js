@@ -283,3 +283,28 @@ exports.deleteTour = async (req, res) => {
 //   }
 //   next();
 // };;
+
+// LESSON Pipeline Aggregation => Dataları manipule etmemızı sıglar
+// Bunu sağlayabılmek ıcın bırkac adım gerekli => İlk adım => "stages" adında bir arrayi aggregate()fonksıyonuna pass edıyoruz
+// stagesı aggregate() içine tanımlıyoruz ve bunlardan tonlarca var bunların hepsine MongoDB doc undan ulaşabiliriz
+// stages object şeklinde yazılır ve başlarına $ konulur
+exports.getToursStats = async (req, res) => {
+  try {
+    const stats = Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } }, // match stage i filter gibidir ve genelde önce yazılır
+      },
+      {
+        $group: {
+          // group ise accumulatorleri kullanarak dokumanları grupluyor
+          _id: null, // first thing always need to specify,this is where we gonna specify waht we want the group by. // Null yapma sebebimiz he rşeyi bir grupta toplamak ıstememız
+        },
+      },
+    ]);
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
