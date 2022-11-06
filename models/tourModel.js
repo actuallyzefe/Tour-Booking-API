@@ -138,6 +138,10 @@ tourSchema.post(/^find/, function (docs, next) {
   console.log(docs);
   next();
 });
+///////////////////
+//////////////////
+// LESSON
+// AGGREGATION MWs
 
 // Burada oluştududğumuz şemalara uygun documentler oluşturduk
 const Tour = mongoose.model('Tour', tourSchema);
