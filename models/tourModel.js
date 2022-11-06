@@ -1,7 +1,7 @@
 // const { string } = require('i/lib/util');
 
 const slugify = require('slugify');
-
+const validator = require('validator');
 const mongoose = require('mongoose');
 // database imizi mongoose a express ile bağladıktan sonra Model oluştuduk
 // Tıpkı OOP js gibi class oluşturur gibi yaptık bir şema oluşturduk
@@ -11,6 +11,10 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a name'],
       unique: true,
+      trim: true,
+      maxlength: [40, 'Tour Name max 40'],
+      minlength: [10, 'Tour Name min 40'],
+      // validate: [validator.isAlpha, 'Tour must only contain characters '],
     },
     slug: String,
 
@@ -25,6 +29,10 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have difficulty'],
+      enum: {
+        values: ['easy', 'medium', 'difficult'],
+        message: 'EASY MEDIUM OR DIFFICULT',
+      },
     },
     ratingsAverage: {
       type: Number,
@@ -38,7 +46,15 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have price'],
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          return val < this.price;
+        },
+        message: 'Price must be greater than discount',
+      },
+    },
 
     summary: {
       type: String,
