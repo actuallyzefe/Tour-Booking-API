@@ -66,6 +66,10 @@ const tourSchema = new mongoose.Schema(
     },
 
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: {
@@ -104,6 +108,34 @@ tourSchema.pre('save', (next) => {
 // ve post mwler onceden biten finishd documantları parametre olarak alabilirler
 tourSchema.post('save', function (doc, next) {
   console.log(doc); // kaydedilen dokumanın detaylarını konsolda goruyoruz (this.slug ile başlyaanda yarattık postmanden de uyguladık)
+  next();
+});
+///////////////////
+//////////////////
+// LESSON
+// mongoose MWs 2) Query MiddleWARE
+// Query mw => allows us to runfunctions before or after a certain query executed.
+
+// tourSchema.pre('find', function (next) {
+//   // thats gonna run BEFORE any "FIND" query is executed!
+//   this.find({ secretTour: { $ne: true } });
+//   next();
+// });
+
+// IMPORTANT BUG FIX-ME
+// YUKARIDA YAPTIGIMIZ KESINLIKLE DOGRU FAKAT GOZUKMEMESINI ISTEDIGIMIZ BIR SEYI URL E IDSINI GIRDIGIMIZDE YINE DE GOZUKUYOR BUNUN OLMAMAIS ICIN FILTERELEMEYI GLOBAL YAPICAZ
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+  this.start = Date.now(); // ne kadar surudugnu gorebılmek ıcın milisanıye cınsınden yarattık oylesıne
+  next();
+});
+
+// QUERY MWs POST
+// Post mw => queryden return lan butun documentlere erısebılıyoruz
+// POST mw => runs AFTER the query has already executed
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start} ms `);
+  console.log(docs);
   next();
 });
 
