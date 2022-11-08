@@ -163,7 +163,7 @@ exports.getAllTours = async (req, res) => {
     // json kodu kullanılırken object ile belirtmeyi unutma!
 
     // SEND RESPONSE
-    res.json({
+    res.status(200).json({
       status: 'success',
       results: tours.length, // olmasına grek yok ama postMan de kaç tane data aldıgımızı gorebılmemız acısından ıyı bır sey
       data: {
