@@ -41,13 +41,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.all('*', (req, res, next) => {
-  res.status(200).json({
-    status: 'Fail',
-    message: `Can not found ${req.originalUrl} on this server`,
-  });
-});
-
 // test
 
 // middleware içerisindeki fonskyıonlar SIRASIYLA req,res ve nexttir
@@ -196,6 +189,13 @@ app.all('*', (req, res, next) => {
 // mounting rout
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+app.all('*', (req, res, next) => {
+  res.status(200).json({
+    status: 'Fail',
+    message: `Can not found ${req.originalUrl} on this server`,
+  });
+});
 // TOURS
 // tourRouter.route('/').get(getAllTours).post(createTour);
 
