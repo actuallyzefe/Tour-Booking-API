@@ -48,6 +48,8 @@ app.all('*', (req, res, next) => {
   });
 });
 
+// test
+
 // middleware içerisindeki fonskyıonlar SIRASIYLA req,res ve nexttir
 // next fonksiyonunu call etmezsen kod stuck olarak kalır.
 
