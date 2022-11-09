@@ -219,6 +219,10 @@ exports.createTour = catchAsync(async (req, res, next) => {
 
   const newTour = await Tour.create(req.body);
 
+  if (!tour) {
+    return next(new appError('No tour found with that ID', 404));
+  }
+
   res.status(201).json({
     status: 'success',
     data: {
