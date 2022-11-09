@@ -80,7 +80,7 @@ class APIFeatures {
 
 // TOURS
 // REFACTORING GET data get etmei mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
-exports.getAllTours = catchAsync(async (req, res) => {
+exports.getAllTours = catchAsync(async (req, res, next) => {
   console.log(req.query);
   // EXECUDE QUERY
   const features = new APIFeatures(Tour.find(), req.query)
@@ -172,7 +172,7 @@ exports.getAllTours = catchAsync(async (req, res) => {
 });
 
 // REFACTORING GET SPESIFIC
-exports.getSpesificTour = catchAsync(async (req, res) => {
+exports.getSpesificTour = catchAsync(async (req, res, next) => {
   // console.log(req.params); // params dediği şey urlde : ile belirtilenlerdir
 
   // const id = req.params.id * 1;
@@ -191,7 +191,7 @@ exports.getSpesificTour = catchAsync(async (req, res) => {
 });
 
 // REFACTORING POST
-exports.createTour = catchAsync(async (req, res) => {
+exports.createTour = catchAsync(async (req, res, next) => {
   // // Daha çncesinde classlara benzer sekılde şemalar olusturup onalra gore de documentler olusturmustuk
   //   // şimdi onun daha basit halini görecegız
   //   try {
@@ -232,7 +232,7 @@ exports.createTour = catchAsync(async (req, res) => {
 // // console.log(newTour)
 
 // REFACTORING UPDATE // PATCH
-exports.updateTour = catchAsync(async (req, res) => {
+exports.updateTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -246,7 +246,7 @@ exports.updateTour = catchAsync(async (req, res) => {
 });
 
 // REFACTORING DELETE
-exports.deleteTour = catchAsync(async (req, res) => {
+exports.deleteTour = catchAsync(async (req, res, next) => {
   await Tour.findByIdAndDelete(req.params.id);
   res.status(204).json({
     status: 'success',
@@ -269,7 +269,7 @@ exports.deleteTour = catchAsync(async (req, res) => {
 // Bunu sağlayabılmek ıcın bırkac adım gerekli => İlk adım => "stages" adında bir arrayi aggregate()fonksıyonuna pass edıyoruz
 // stagesı aggregate() içine tanımlıyoruz ve bunlardan tonlarca var bunların hepsine MongoDB doc undan ulaşabiliriz
 // stages object şeklinde yazılır ve başlarına $ konulur
-exports.getToursStats = catchAsync(async (req, res) => {
+exports.getToursStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.5 } }, // match stage i filter gibidir ve genelde önce yazılır
@@ -302,7 +302,7 @@ exports.getToursStats = catchAsync(async (req, res) => {
   });
 });
 
-exports.getMonthlyPlan = catchAsync(async (req, res) => {
+exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
 
   const plan = await Tour.aggregate([
