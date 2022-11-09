@@ -1,5 +1,5 @@
 'use strict';
-
+const catchAsync = require('./../catchAsync');
 const fs = require('fs');
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -203,12 +203,6 @@ exports.getSpesificTour = async (req, res) => {
   }
 };
 
-const catchAsync = (fn) => {
-  return (req, res, next) => {
-    fn(req, res, next).catch((err) => next(err));
-  };
-};
-
 // REFACTORING POST
 exports.createTour = catchAsync(async (req, res) => {
   // // Daha çncesinde classlara benzer sekılde şemalar olusturup onalra gore de documentler olusturmustuk
@@ -225,6 +219,8 @@ exports.createTour = catchAsync(async (req, res) => {
   //     message: err,
   //   });
   // }
+
+  // kodları comment out yaptık cunku try catch kullanmak yerıne catchAsync adında bır errorhandler yaı-ptık ve başka bir dosya olusturudk
 
   const newTour = await Tour.create(req.body);
 
