@@ -80,106 +80,99 @@ class APIFeatures {
 
 // TOURS
 // REFACTORING GET data get etmei mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
-exports.getAllTours = async (req, res) => {
-  try {
-    console.log(req.query);
-    // EXECUDE QUERY
-    const features = new APIFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
-    const tours = await features.query;
+exports.getAllTours = catchAsync(async (req, res) => {
+  console.log(req.query);
+  // EXECUDE QUERY
+  const features = new APIFeatures(Tour.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+  const tours = await features.query;
 
-    // BUILD QUERY
-    // 1A) FILTERING LESSON
-    // const queryObj = { ...req.query };
-    // const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    // excludedFields.forEach((el) => delete queryObj[el]);
+  // BUILD QUERY
+  // 1A) FILTERING LESSON
+  // const queryObj = { ...req.query };
+  // const excludedFields = ['page', 'sort', 'limit', 'fields'];
+  // excludedFields.forEach((el) => delete queryObj[el]);
 
-    // // IMPORTANT LESSON
-    // // STEP 1: We created a copy of the req.query using spread operator const queryObj = {...req.query}
+  // // IMPORTANT LESSON
+  // // STEP 1: We created a copy of the req.query using spread operator const queryObj = {...req.query}
 
-    // // STEP 2: We created an array of object that we want to exclude from the query strings const excludedFields = ['page', 'sort', 'limit', 'fileds']
+  // // STEP 2: We created an array of object that we want to exclude from the query strings const excludedFields = ['page', 'sort', 'limit', 'fileds']
 
-    // // STEP 3: We have to loop through the array to exclude what we don't want to consider.
+  // // STEP 3: We have to loop through the array to exclude what we don't want to consider.
 
-    // // excludedFields.forEach(el => delete queryObj[el])
-    // // console.log(req.query, queryObj);
+  // // excludedFields.forEach(el => delete queryObj[el])
+  // // console.log(req.query, queryObj);
 
-    // // 2B) ADVANCED FILTERING LESSON
-    // let queryStr = JSON.stringify(queryObj); // replace kullanabılmek adına objectki stringe donsuturduk
-    // queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`); // stringleri de normalde mongoDB operotur olan $gte $gt $lt vesaire bunları regular expressionlarla degıstırecegız
-    // // console.log(JSON.parse(queryStr));
+  // // 2B) ADVANCED FILTERING LESSON
+  // let queryStr = JSON.stringify(queryObj); // replace kullanabılmek adına objectki stringe donsuturduk
+  // queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`); // stringleri de normalde mongoDB operotur olan $gte $gt $lt vesaire bunları regular expressionlarla degıstırecegız
+  // // console.log(JSON.parse(queryStr));
 
-    // let query = Tour.find(JSON.parse(queryStr)); // Tour.find() bize bir query return edecek ve o query i birçok kez chain edebileceğiz
+  // let query = Tour.find(JSON.parse(queryStr)); // Tour.find() bize bir query return edecek ve o query i birçok kez chain edebileceğiz
 
-    // // 2) SORTING LESSON
-    // if (req.query.sort) {
-    //   const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
-    //   // console.log(sortBy);
-    //   query = query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
-    // } else {
-    //   query = query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
-    // }
+  // // 2) SORTING LESSON
+  // if (req.query.sort) {
+  //   const sortBy = req.query.sort.split(',').join(' '); // eğer ki sıralamamızı ıstedıgımız secenkde eşitlik olursa farklı bir kriter belirledik
+  //   // console.log(sortBy);
+  //   query = query.sort(sortBy); // query = query.sort(req.query.sort); // query.sort un içine ise neye gore sıralanmasını sıtedıgmzı belırttık o da  requestin i.indeki querynin içindeki postmande belırttıgımız sorting adı yani price (mesela)
+  // } else {
+  //   query = query.sortquery = query.sort('-createdAt name'); // kullanıcı hiçbir sorting belirtmezse default olarak ilk önce en yeni eklenen Tour u görüntüleyecek (normalde -createdAt yazmıstık ama bir buga sebep oldugundan ada gore sıralanmasını istedik)
+  // }
 
-    // // 3) LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
-    // if (req.query.fields) {
-    //   const fields = req.query.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
-    //   query = query.select(fields);
-    // } else {
-    //   query = query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
-    // }
+  // // 3) LIMITING FIELDS // LESSON // field dediğimiz eşler kullanıcga response olarak datanın gozukecek kısımlarını secmek gibidir
+  // if (req.query.fields) {
+  //   const fields = req.query.fields.split(',').join(' '); // burayı tıpkı sortingde yaptıgımız gibi önce postmande belirttik daha somrada query ye atadık
+  //   query = query.select(fields);
+  // } else {
+  //   query = query.select('-__v'); // bu __v mongoose un kullandıgı ama kullancıyı ılgılendırmeyen bir şey ondan dolayı onun harıcındeki tum datayı default olarak gosterdık
+  // }
 
-    // // 4) PAGINATION LESSON => 1-10 a kadar olan makaleler sayfa1 / 11-20 sayfa 2,/ 21-30 sayfa 3
-    // const page = req.query.page * 1 /*stringden number a çevirdik*/ || 1;
-    // const limit = req.query.limit * 1 || 100;
-    // const skip = (page - 1) * limit;
+  // // 4) PAGINATION LESSON => 1-10 a kadar olan makaleler sayfa1 / 11-20 sayfa 2,/ 21-30 sayfa 3
+  // const page = req.query.page * 1 /*stringden number a çevirdik*/ || 1;
+  // const limit = req.query.limit * 1 || 100;
+  // const skip = (page - 1) * limit;
 
-    // if (req.query.page) {
-    //   const numTours = await Tour.countDocuments(); // eğer ki var olan document sayısından fazla bir şey istendiyse error verecegız
-    //   if (skip >= numTours) throw new Error("This page doesn't exist");
-    // }
+  // if (req.query.page) {
+  //   const numTours = await Tour.countDocuments(); // eğer ki var olan document sayısından fazla bir şey istendiyse error verecegız
+  //   if (skip >= numTours) throw new Error("This page doesn't exist");
+  // }
 
-    // // burada da kullanıcının hangı sayfayı ıstedıgınde yapıalcak formulu uyguladık
-    // query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
+  // // burada da kullanıcının hangı sayfayı ıstedıgınde yapıalcak formulu uyguladık
+  // query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını limit ise oncesınde gordugumuzun aynısı kac result gosterecegını limitliyor
 
-    // console a yansıttgıız req.query aslında tıpkı bıızm kendı elımızle yazıdıgımız objecte benzedıgnden boyle yapıp da kullanabıliriz
-    // bu bilgiyi ise postmanden çekiyor
+  // console a yansıttgıız req.query aslında tıpkı bıızm kendı elımızle yazıdıgımız objecte benzedıgnden boyle yapıp da kullanabıliriz
+  // bu bilgiyi ise postmanden çekiyor
 
-    // const tours = await Tour.find({
-    //   duration: 5,
-    //   difficulty: 'easy',
-    // });
+  // const tours = await Tour.find({
+  //   duration: 5,
+  //   difficulty: 'easy',
+  // });
 
-    // Mongoose methodlarıyla yapılmıs halı
-    // const tours = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
+  // Mongoose methodlarıyla yapılmıs halı
+  // const tours = await Tour.find()
+  //   .where('duration')
+  //   .equals(5)
+  //   .where('difficulty')
+  //   .equals('easy');
 
-    // json koduyla send edecebılecegımızzden bahsetmıstım
-    // json kodu kullanılırken object ile belirtmeyi unutma!
+  // json koduyla send edecebılecegımızzden bahsetmıstım
+  // json kodu kullanılırken object ile belirtmeyi unutma!
 
-    // SEND RESPONSE
-    res.status(200).json({
-      status: 'success',
-      results: tours.length, // olmasına grek yok ama postMan de kaç tane data aldıgımızı gorebılmemız acısından ıyı bır sey
-      data: {
-        tours: tours,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'Fail',
-      message: err,
-    });
-  }
-};
+  // SEND RESPONSE
+  res.status(200).json({
+    status: 'success',
+    results: tours.length, // olmasına grek yok ama postMan de kaç tane data aldıgımızı gorebılmemız acısından ıyı bır sey
+    data: {
+      tours: tours,
+    },
+  });
+});
 
 // REFACTORING GET SPESIFIC
-exports.getSpesificTour = async (req, res) => {
+exports.getSpesificTour = catchAsync(async (req, res) => {
   // console.log(req.params); // params dediği şey urlde : ile belirtilenlerdir
 
   // const id = req.params.id * 1;
@@ -187,21 +180,15 @@ exports.getSpesificTour = async (req, res) => {
   // gçrebilecğin üzeriee idler string olarak gelıyor onun için ufak bi trick yaptık
 
   // GUARD
-  try {
-    const tour = await Tour.findById(req.params.id);
-    res.json({
-      status: 'success',
-      data: {
-        tour: tour,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'Fail',
-      message: err,
-    });
-  }
-};
+
+  const tour = await Tour.findById(req.params.id);
+  res.json({
+    status: 'success',
+    data: {
+      tour: tour,
+    },
+  });
+});
 
 // REFACTORING POST
 exports.createTour = catchAsync(async (req, res) => {
@@ -245,42 +232,28 @@ exports.createTour = catchAsync(async (req, res) => {
 // // console.log(newTour)
 
 // REFACTORING UPDATE // PATCH
-exports.updateTour = async (req, res) => {
-  try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+exports.updateTour = catchAsync(async (req, res) => {
+  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
 
 // REFACTORING DELETE
-exports.deleteTour = async (req, res) => {
-  try {
-    await Tour.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      status: 'success',
-      message: 'Tour deleted!',
-      data: null,
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+exports.deleteTour = catchAsync(async (req, res) => {
+  await Tour.findByIdAndDelete(req.params.id);
+  res.status(204).json({
+    status: 'success',
+    message: 'Tour deleted!',
+    data: null,
+  });
+});
 
 // exports.checkBody = (req, res, next) => {
 //   if (!req.body.name || !req.body.price) {
@@ -296,45 +269,38 @@ exports.deleteTour = async (req, res) => {
 // Bunu sağlayabılmek ıcın bırkac adım gerekli => İlk adım => "stages" adında bir arrayi aggregate()fonksıyonuna pass edıyoruz
 // stagesı aggregate() içine tanımlıyoruz ve bunlardan tonlarca var bunların hepsine MongoDB doc undan ulaşabiliriz
 // stages object şeklinde yazılır ve başlarına $ konulur
-exports.getToursStats = async (req, res) => {
-  try {
-    const stats = await Tour.aggregate([
-      {
-        $match: { ratingsAverage: { $gte: 4.5 } }, // match stage i filter gibidir ve genelde önce yazılır
+exports.getToursStats = catchAsync(async (req, res) => {
+  const stats = await Tour.aggregate([
+    {
+      $match: { ratingsAverage: { $gte: 4.5 } }, // match stage i filter gibidir ve genelde önce yazılır
+    },
+    {
+      $group: {
+        // group ise accumulatorleri kullanarak dokumanları grupluyor
+        // _id: null, // first thing always need to specify,this is where we gonna specify waht we want the group by. // Null yapma sebebimiz he rşeyi bir grupta toplamak ıstememız
+        _id: '$difficulty', // böylelikle de yazdıgımız krıtere gore sıralandı
+        numTours: { $sum: 1 },
+        numRatings: { $sum: 'ratingsQuantity' },
+        avgRating: { $avg: '$ratingsAverage' }, // $avg mongoDB özel averaj hesaplama operatoru içine de neyın averajını almak sıtedıgımızı " " içinde yazıyoruz
+        avgPrice: { $avg: '$price' },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' },
       },
-      {
-        $group: {
-          // group ise accumulatorleri kullanarak dokumanları grupluyor
-          // _id: null, // first thing always need to specify,this is where we gonna specify waht we want the group by. // Null yapma sebebimiz he rşeyi bir grupta toplamak ıstememız
-          _id: '$difficulty', // böylelikle de yazdıgımız krıtere gore sıralandı
-          numTours: { $sum: 1 },
-          numRatings: { $sum: 'ratingsQuantity' },
-          avgRating: { $avg: '$ratingsAverage' }, // $avg mongoDB özel averaj hesaplama operatoru içine de neyın averajını almak sıtedıgımızı " " içinde yazıyoruz
-          avgPrice: { $avg: '$price' },
-          minPrice: { $min: '$price' },
-          maxPrice: { $max: '$price' },
-        },
-      },
-      {
-        $sort: { avgPrice: 1 }, // burada sorting ederken dikkat etmemız gereken sey groupda tanımaldıgımız field nameleri kullanak olacak // avgPrice: 1 => gittikçe artan sıralam seklı ıcın
-      },
-      // {
-      //   $match: { _id: { $ne: 'easy' } }, // burada da repeat stage yapılabıldıgını goterdık ve $ne => not ecual => easy olan datayı gosterme
-      // },
-    ]);
-    res.status(200).json({
-      status: 'success',
-      data: {
-        stats,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+    },
+    {
+      $sort: { avgPrice: 1 }, // burada sorting ederken dikkat etmemız gereken sey groupda tanımaldıgımız field nameleri kullanak olacak // avgPrice: 1 => gittikçe artan sıralam seklı ıcın
+    },
+    // {
+    //   $match: { _id: { $ne: 'easy' } }, // burada da repeat stage yapılabıldıgını goterdık ve $ne => not ecual => easy olan datayı gosterme
+    // },
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      stats,
+    },
+  });
+});
 
 exports.getMonthlyPlan = async (req, res) => {
   try {
