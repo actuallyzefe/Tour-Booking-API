@@ -2,6 +2,8 @@
 const express = require('express');
 const morgan = require('morgan');
 
+const appError = require('./utils/appError');
+const globalErrorHandler = require('./Controllers/errorController');
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
 
@@ -196,25 +198,17 @@ app.all('*', (req, res, next) => {
   //   status: 'Fail',
   //   message: `Can not found ${req.originalUrl} on this server`,
   // });
+  // const err = new Error(`Can not found ${req.originalUrl} on this server`);
+  // err.status = 'fail';
+  // err.statusCode = 404;
+  // next(err);// normalde bir şey pass etmezdik ama bu bir error middleware oldugu ıcın ıcıne yazdııgmız sey ıle error oldgunu belırtıyoruz
 
-  const err = new Error(`Can not found ${req.originalUrl} on this server`);
-  err.status = 'fail';
-  err.statusCode = 404;
-
-  next(err); // normalde bir şey pass etmezdik ama bu bir error middleware oldugu ıcın ıcıne yazdııgmız sey ıle error oldgunu belırtıyoruz
+  next(new appError(`Can not found ${req.originalUrl} on this server`, 404));
 });
 
 // LESSON
 
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-});
+app.use(globalErrorHandler);
 
 // TOURS
 // tourRouter.route('/').get(getAllTours).post(createTour);
