@@ -302,52 +302,45 @@ exports.getToursStats = catchAsync(async (req, res) => {
   });
 });
 
-exports.getMonthlyPlan = async (req, res) => {
-  try {
-    const year = req.params.year * 1;
+exports.getMonthlyPlan = catchAsync(async (req, res) => {
+  const year = req.params.year * 1;
 
-    const plan = await Tour.aggregate([
-      {
-        $unwind: '$startDates',
-      },
-      {
-        $match: {
-          startDates: {
-            $gte: new Date(`${year}-01-01`),
-            $lte: new Date(`${year}-12-31`),
-          },
+  const plan = await Tour.aggregate([
+    {
+      $unwind: '$startDates',
+    },
+    {
+      $match: {
+        startDates: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`),
         },
       },
-      {
-        $group: {
-          _id: { $month: '$startDates' }, // $month mongoDB date opeartoru => bunun hemen bır ustude yarattıgımız datelerden "MONTH"u seçip alıyor
-          numTourStarts: { $sum: 1 }, // hangi ayda kaç tane dur oldugunu gosterıyor ve ona gore 1 eklıyor
-          tours: { $push: '$name' }, // Hangi ayda hangi turların oldugunu gosterdık
-        },
+    },
+    {
+      $group: {
+        _id: { $month: '$startDates' }, // $month mongoDB date opeartoru => bunun hemen bır ustude yarattıgımız datelerden "MONTH"u seçip alıyor
+        numTourStarts: { $sum: 1 }, // hangi ayda kaç tane dur oldugunu gosterıyor ve ona gore 1 eklıyor
+        tours: { $push: '$name' }, // Hangi ayda hangi turların oldugunu gosterdık
       },
-      {
-        $addFields: { month: '$_id' },
+    },
+    {
+      $addFields: { month: '$_id' },
+    },
+    {
+      $project: {
+        _id: 0, // 1 olursa id gözükecek 0 da gözükmeyecek
       },
-      {
-        $project: {
-          _id: 0, // 1 olursa id gözükecek 0 da gözükmeyecek
-        },
-      },
-      {
-        $sort: { numTourStarts: -1 }, // bir ayda en çok tura sahip olanın gozukmesını sapladık
-      },
-    ]);
+    },
+    {
+      $sort: { numTourStarts: -1 }, // bir ayda en çok tura sahip olanın gozukmesını sapladık
+    },
+  ]);
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        plan,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+  res.status(200).json({
+    status: 'success',
+    data: {
+      plan,
+    },
+  });
+});
