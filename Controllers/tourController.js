@@ -1,5 +1,5 @@
 'use strict';
-const catchAsync = require('./../catchAsync');
+const catchAsync = require('../utils/catchAsync');
 const fs = require('fs');
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
