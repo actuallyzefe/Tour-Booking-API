@@ -1,6 +1,9 @@
 'use strict';
 const catchAsync = require('../utils/catchAsync');
+const appError = require('../utils/appError');
+
 const fs = require('fs');
+
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
@@ -182,6 +185,11 @@ exports.getSpesificTour = catchAsync(async (req, res, next) => {
   // GUARD
 
   const tour = await Tour.findById(req.params.id);
+
+  if (!tour) {
+    return next(new appError('No tour found with that ID', 404));
+  }
+
   res.json({
     status: 'success',
     data: {
