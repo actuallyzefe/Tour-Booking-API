@@ -6,7 +6,8 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateErrorDB = (err) => {
-  const value = err.errmsg;
+  const value = err.errmsg.match(/(["'])(?:\\.|[^\\])*?\1/);
+  console.log(value);
   const message = 'Duplicate field value: x';
 };
 
