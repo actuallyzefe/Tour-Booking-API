@@ -147,7 +147,7 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 // QUERY MWs POST
-// Post mw => queryden return lan butun documentlere erısebılıyoruz
+// Post mw => queryden returnlanan butun documentlere erısebılıyoruz
 // POST mw => runs AFTER the query has already executed
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} ms `);

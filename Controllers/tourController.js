@@ -283,7 +283,7 @@ exports.deleteTour = catchAsync(async (req, res, next) => {
 //   next();
 // };;
 
-// LESSON Pipeline Aggregation => Dataları manipule etmemızı sıglar
+// LESSON Pipeline Aggregation => Dataları manipule etmemızı saglar
 // Bunu sağlayabılmek ıcın bırkac adım gerekli => İlk adım => "stages" adında bir arrayi aggregate()fonksıyonuna pass edıyoruz
 // stagesı aggregate() içine tanımlıyoruz ve bunlardan tonlarca var bunların hepsine MongoDB doc undan ulaşabiliriz
 // stages object şeklinde yazılır ve başlarına $ konulur
@@ -325,7 +325,8 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
 
   const plan = await Tour.aggregate([
     {
-      $unwind: '$startDates',
+      $unwind: '$startDates', // UNWIND => Deconstructs an array field from the input documents to output a document for each element.
+      //  Each output document is the input document with the value of the array field replaced by the element.
     },
     {
       $match: {
@@ -351,7 +352,7 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
       },
     },
     {
-      $sort: { numTourStarts: -1 }, // bir ayda en çok tura sahip olanın gozukmesını sapladık
+      $sort: { numTourStarts: -1 }, // bir ayda en çok tura sahip olanın gozukmesını sağladık
     },
   ]);
 
