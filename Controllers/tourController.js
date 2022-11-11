@@ -217,7 +217,8 @@ exports.createTour = catchAsync(async (req, res, next) => {
 
   // kodları comment out yaptık cunku try catch kullanmak yerıne catchAsync adında bır errorhandler yaı-ptık ve başka bir dosya olusturudk
 
-  const newTour = await Tour.create(req.body);
+  const newTour = await Tour.create(req.body); // burası yukarıda da yazıyordu hızlıca comment yaparken onu da etmısım
+  // burada Tour schemasınını kullanak ve ona ait create() fonksıyonunu kullanarak request elemanına ait bodynin içindeki dataları kullanarak yeni kullancıyı await ettik
 
   res.status(201).json({
     status: 'success',
