@@ -50,6 +50,21 @@ userSchema.pre('save', async function (next) {
   // bu ise dataBase de istemediğmiz bir bilgi bu sadece kullanıcının şifresni yazarken hata yapmamsını sağlamak için koyduugmuz bir şey
   next();
 });
+
+// IMPORTANT LESSON
+// Kullnacının girdiği password ile encrypt edilmiş passwordu karşılaştırma
+// Instance method kullancagız => tum dokumanlarda kullanılabilir olan bir method
+
+// ilk parametre orijinal Password 2. parametre hashed password
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// Şimdi bu yarattığımız fonskıyonu authControllerda çalıştıracağız
+
 // unutma modellar büyük harfle belirtilir (genel kural)
 const User = mongoose.model('User', userSchema);
 module.exports = User;

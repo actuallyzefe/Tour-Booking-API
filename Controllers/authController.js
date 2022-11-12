@@ -4,6 +4,12 @@ const catchAsync = require('./../utils/catchAsync');
 // async fonskıyonları normalde try catch blockuna yazarız normadle ama daha önceden yarattıgımız catchAsync ile errorlerı yazmakla ugrasmaadan catchliyorus
 const appError = require('./../utils/appError');
 
+const signToken = (id) => {
+  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
+
 // exports.signup = catchAsync(async (req, res, next) => {
 // Data işlemi olacağından tabii ki async fonkısoyn kullanacagız
 // const newUser = await User.create(req.body); // buranın hepsi bir promise dondurecegınden onları await ile aktif ediyorz.// create() fonksıyonu ile yeni bir öğe oluştuuryorduk
@@ -28,9 +34,12 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   // sign() içreisine yazılan 3.şey ise optionlardır ve {} objectlerdir => yaratılan token ın geçerlilik süresi => bunu yine config dosyanda veya "" içerisnde belirteblirsin
   // d => days => m => minutes
-  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+
+  // daha fazlaca kullancagımı ıcın burayı comment out yapıp bir tokenGeneraor fonskıyonu yazdık (top level )
+  const token = signToken(newUser._id);
+  // jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+  //   expiresIn: process.env.JWT_EXPIRES_IN,
+  // });
 
   res.status(201).json({
     status: 'success',
@@ -53,9 +62,14 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   // 2) Check if user exists and password is correct
   const user = await User.findOne({ email: email }).select('+password'); //database e leak etmedik burada explcit olarak belirttik
+  // const correct = await user.correctPassword(password, user.password); //
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new appError('Incorrect email or password'), 401);
+  }
 
   // 3) If everything ok, send token to client
-  const token = '';
+  const token = signToken(user._id);
   res.status(200).json({
     status: 'Success',
     token,
