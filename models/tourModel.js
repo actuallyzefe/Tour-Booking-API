@@ -109,7 +109,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 
 // LESSON
 // mongooseda da middlewarelar vardır (middleware => iki event arası olayları kontrol etmek)
-// Document Middleware runs before .save() nad .create()
+// Document Middleware runs before .save() AND .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
