@@ -79,8 +79,14 @@ exports.login = catchAsync(async (req, res, next) => {
 // LESSON PROTECTED ROUTES
 // UYE GIRISI YAPMAMIS KULLANICILARIN TUM TURLARI GORUNTULEMESINI ISTEMIYORUZ => .getAllTours
 // ALERT bunun içinde bir middleware kullanıyoruz
+
+// DIKKAT IMPORTANT FIX-ME
+// 1. KISIM İÇİN YAPTIGIMIZ SEY CALISMIYOR NEDENDIR BILINMEZ COK İLGİNC?
+// YAPTIGIMIZ SEY ISE postman DE authorization headerının valuesunu Bearer boşluk token olarak yaptık
+// böylelikle üye olmadan tüm turları görüntüleyeemeyceklerdi
+
+//1) Getting token and check if it exists
 exports.protect = catchAsync(async (req, res, next) => {
-  // 1) Getting Token and check if it's exists // postmande header kısmında belirtiyoruz => Authorization value => Bearer ve Token
   let token;
   if (
     req.headers.authorization &&
@@ -88,11 +94,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
-  console.log('efe');
-  // 2) Verification token
 
-  // 3) Check if user still exists
-
-  // 4) Check if user changed password after the token was issued
+  if (!token) {
+    return next(
+      new AppError('You are not logged in! Please log in to get access.', 401)
+    );
+  }
+  //2) Verification token
+  //3) Check if user exists
+  //4) Check if user changed password after the token was issued
   next();
 });

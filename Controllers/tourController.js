@@ -84,7 +84,7 @@ class APIFeatures {
 // TOURS
 // REFACTORING GET data get etmei mongo ile asyn fonskıyon seklıdne yapabiliriz data get => data/file read/okuma yapma
 exports.getAllTours = catchAsync(async (req, res, next) => {
-  console.log(req.query);
+  // console.log(req.query);
   // EXECUDE QUERY
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
