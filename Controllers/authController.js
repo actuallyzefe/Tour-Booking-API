@@ -80,8 +80,15 @@ exports.login = catchAsync(async (req, res, next) => {
 // UYE GIRISI YAPMAMIS KULLANICILARIN TUM TURLARI GORUNTULEMESINI ISTEMIYORUZ => .getAllTours
 // ALERT bunun içinde bir middleware kullanıyoruz
 exports.protect = catchAsync(async (req, res, next) => {
-  // 1) Getting Token and check if it's exists
-
+  // 1) Getting Token and check if it's exists // postmande header kısmında belirtiyoruz => Authorization value => Bearer ve Token
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  console.log('efe');
   // 2) Verification token
 
   // 3) Check if user still exists
