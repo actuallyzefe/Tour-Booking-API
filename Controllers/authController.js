@@ -79,6 +79,13 @@ exports.login = catchAsync(async (req, res, next) => {
 // LESSON PROTECTED ROUTES
 // UYE GIRISI YAPMAMIS KULLANICILARIN TUM TURLARI GORUNTULEMESINI ISTEMIYORUZ => .getAllTours
 // ALERT bunun içinde bir middleware kullanıyoruz
-exports.protect = catchAsync((req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1) Getting Token and check if it's exists
+
+  // 2) Verification token
+
+  // 3) Check if user still exists
+
+  // 4) Check if user changed password after the token was issued
   next();
 });
