@@ -76,4 +76,9 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-// LESSON
+// LESSON PROTECTED ROUTES
+// UYE GIRISI YAPMAMIS KULLANICILARIN TUM TURLARI GORUNTULEMESINI ISTEMIYORUZ => .getAllTours
+// ALERT bunun içinde bir middleware kullanıyoruz
+exports.protect = catchAsync((req, res, next) => {
+  next();
+});

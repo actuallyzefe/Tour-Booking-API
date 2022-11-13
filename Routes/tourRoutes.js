@@ -1,6 +1,7 @@
 const express = require('express');
 const tourController = require('./../Controllers/tourController');
 const router = express.Router();
+const authController = require('./../Controllers/authController');
 
 // param middleware 5tane değer alır ve daha öcne yarattıgımız guard clasue gorevı gorur
 // router.param('id', tourController.checkId);
@@ -13,15 +14,17 @@ router
 // onu da middlewre olarak ekledık ?
 
 router.route('/tour-stats').get(tourController.getToursStats);
+
 router
   .route('/')
   .get(tourController.getAllTours)
   .post(tourController.createTour);
 
 router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
+
 router
   .route('/')
-  .get(tourController.getAllTours)
+  .get(authController.protect, tourController.getAllTours)
   .post(tourController.createTour);
 
 router
