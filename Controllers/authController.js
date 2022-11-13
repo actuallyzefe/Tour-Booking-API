@@ -90,9 +90,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization.startsWith('Bearer') // burada token kontrolu yapabilmek için Bearer ı kullandık
+    // Eğeer ki bunların 2side mevcutsa token tanımlanacak
   ) {
-    token = req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization.split(' ')[1]; // Auth valuesu postmnada Bearer ve Token şeklindeydi Boşlukla ayrılanları alıp arrye koyduk ve  arrayın 2. elemaını seçtik(orijinal tokeny)
   }
 
   if (!token) {
