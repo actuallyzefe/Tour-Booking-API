@@ -99,7 +99,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (!token) {
     return next(
-      new AppError('You are not logged in! Please log in to get access.', 401)
+      new appError('You are not logged in! Please log in to get access.', 401)
     );
   }
   // console.log(token);
@@ -108,6 +108,15 @@ exports.protect = catchAsync(async (req, res, next) => {
   // LESSON burada ise JWT nin verify methodunu kullanacagız jwt.sign ın aksine verify => 3. parametre olarak bir CB fonksıyon alır
   // BU CB verification tamamlandıktan hemen sonra çalışır
 
+  const decoded = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET,
+    () => {}
+  ); // ALERT bu fonksyıon aslında callback ıcerdıgınden dolayı async bir fonksıyon
+  // buraya kadar promiseler ile ugrastıgımızdan bu pattern i bozmaya gerek yok bunu da async await ile kullanabilmek için promisfy yapabiliriz
+  // promisfy => return a promise => use async await
+
+  console.log(decoded);
   //3) Check if user exists
   //4) Check if user changed password after the token was issued
   next();
