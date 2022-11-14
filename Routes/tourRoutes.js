@@ -15,10 +15,10 @@ router
 
 router.route('/tour-stats').get(tourController.getToursStats);
 
-router
-  .route('/')
-  .get(tourController.getAllTours)
-  .post(tourController.createTour);
+// router
+//   .route('/')
+//   .get(tourController.getAllTours)
+//   .post(tourController.createTour);
 
 router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
