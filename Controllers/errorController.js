@@ -1,3 +1,4 @@
+const { token } = require('morgan');
 const appError = require('../utils/appError');
 
 const handleCastErrorDB = (err) => {
