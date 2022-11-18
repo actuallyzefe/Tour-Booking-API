@@ -81,8 +81,6 @@ exports.login = catchAsync(async (req, res, next) => {
 // UYE GIRISI YAPMAMIS KULLANICILARIN TUM TURLARI GORUNTULEMESINI ISTEMIYORUZ => .getAllTours
 // ALERT bunun içinde bir middleware kullanıyoruz
 
-// DIKKAT IMPORTANT FIX-ME
-// 1. KISIM İÇİN YAPTIGIMIZ SEY CALISMIYOR NEDENDIR BILINMEZ COK İLGİNC?
 // YAPTIGIMIZ SEY ISE postman DE authorization headerının valuesunu Bearer boşluk token olarak yaptık
 // böylelikle üye olmadan tüm turları görüntüleyeemeyceklerdi
 
@@ -104,7 +102,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   // console.log(token);
 
-  //2) Verification token
+  //2) Verification token => TOKEN IN DOGRULAMASINI YAPIYORUZ YANI HERHANGI BIRI TOKEN DA BIR OYNAMA YAPMIS MI VESAIRE
   // LESSON burada ise JWT nin verify methodunu kullanacagız jwt.sign ın aksine verify => 3. parametre olarak bir CB fonksıyon alır
   // BU CB verification tamamlandıktan hemen sonra çalışır
 
@@ -116,8 +114,11 @@ exports.protect = catchAsync(async (req, res, next) => {
   // buraya kadar promiseler ile ugrastıgımızdan bu pattern i bozmaya gerek yok bunu da async await ile kullanabilmek için promisfy yapabiliriz
   // promisfy => return a promise => use async await
 
-  console.log(decoded);
+  // console.log(decoded);
+
   //3) Check if user exists
+  const freshUser = await User.findById(decoded.id);
+  console.log(freshUser);
   //4) Check if user changed password after the token was issued
   next();
 });
