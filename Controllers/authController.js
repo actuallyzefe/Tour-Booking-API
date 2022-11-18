@@ -25,6 +25,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt: req.body.passwordChangedAt,
   });
 
   // PAYLOAD => token ın içinde bulunan ve dataları store ettıgımız bır object
@@ -117,8 +118,19 @@ exports.protect = catchAsync(async (req, res, next) => {
   // console.log(decoded);
 
   //3) Check if user exists
-  const freshUser = await User.findById(decoded.id);
-  console.log(freshUser);
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next(new appError('the user no longer exists'), 401);
+  }
+  console.log(currentUser);
+
   //4) Check if user changed password after the token was issued
+  // burada ise önce instance olarak userModel a yazacagız
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(new appError('USER RECENTLY CHANGED PASSWORD'), 401);
+  } // iat => issued At
+
+  // GRANT ACCESS TO PROTECTED ROUTES
+  req.user = currentUser;
   next();
 });

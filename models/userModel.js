@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not same',
     },
   },
+  passwordChangedAt: Date,
 });
 
 // IMPORTANT LESSON
@@ -64,6 +65,19 @@ userSchema.methods.correctPassword = async function (
 };
 
 // Şimdi bu yarattığımız fonskıyonu authControllerda çalıştıracağız
+
+userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    // eğer ki passwordChangedaT VARSA yani kullanıcnı şifresini değiştirmişse bu karşılaştırmayı yap eğer degıstırmemzıse return false
+    console.log(changedTimeStamp, JWTTimeStamp);
+    return JWTTimeStamp < changedTimeStamp;
+  }
+  return false; // DEFAULT OLARAK FALSE RETURN ETTIRIDK
+};
 
 // unutma modellar büyük harfle belirtilir (genel kural)
 const User = mongoose.model('User', userSchema);
