@@ -143,13 +143,13 @@ exports.protect = catchAsync(async (req, res, next) => {
 // wrappr fonskıyonumuzun ıcıne roles arreyını (...roles ) ile (rest parameter) yerleştirdik
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
-    // Roles: lead-gudie / guide / user / admin
+    // roles ['admin', 'lead-guide']. role='user'
     if (!roles.includes(req.user.role)) {
-      // req.user => userSchemanın ıcerısınden de Role u sectık
-      // yukarıda req.user = currentUser yapmıstık boylelıkle protected routtan sonra user ınfosu requestın ıcınde oldu
-      // eğer ki
-      new appError('you dont have the permission', 403);
+      return next(
+        new appError('You do not have permission to perform this action', 403)
+      );
     }
+
     next();
   };
 };
