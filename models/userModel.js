@@ -1,4 +1,5 @@
 const { string } = require('i/lib/util');
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const { default: isEmail } = require('validator/lib/isEmail');
@@ -42,6 +43,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // IMPORTANT LESSON
@@ -83,6 +86,16 @@ userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
     return JWTTimeStamp < changedTimeStamp;
   }
   return false; // DEFAULT OLARAK FALSE RETURN ETTIRIDK
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes('32').toString('hex'); // reset tokeınımız cyrptografık olarak normal password token akdar guclu olmak zorunda degıl (pasword hash)
+
+  // ENCRYPT
+  this.passwordResetToken = crypto
+    .createHash('sha256') // kullanılacak algorıtma
+    .update(resetToken) // neyın update edileceğini belirityoruz
+    .digest('hex'); // kullanılacak string
 };
 
 // unutma modellar büyük harfle belirtilir (genel kural)
