@@ -134,3 +134,22 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// LESSON ALERT IMPORTANT
+//BURADA TOUR ROUTES A KOYDUGUMUZ DELETE ISLEMI ICIN SADECE BLEIRLI KULLANICLARIN IZINLI OLASMINI TASARLIYORUZ
+// normalde herhangi bir middleware fonkısoyna arguman pass edilmez ama burada yapmamız gerke nasıl yapacagız ?
+
+// BUNUN ICIN BİR "wrapper FONSKIYON " yapabilir (fonksıyon ıcınde fonskıyon) bu wrapper fonskıyon da direkt olarak middleware fonksıyonumuzu return eder
+// wrappr fonskıyonumuzun ıcıne roles arreyını (...roles ) ile (rest parameter) yerleştirdik
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // Roles: lead-gudie / guide / user / admin
+    if (!roles.includes(req.user.role)) {
+      // req.user => userSchemanın ıcerısınden de Role u sectık
+      // yukarıda req.user = currentUser yapmıstık boylelıkle protected routtan sonra user ınfosu requestın ıcınde oldu
+      // eğer ki
+      new appError('you dont have the permission', 403);
+    }
+    next();
+  };
+};
