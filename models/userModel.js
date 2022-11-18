@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    enum: ['user', 'guide', 'lead-guide'], // The goal of this update is exactly to NOT use the role property, so that it can't be misused to create admins by just anyone.
     default: 'user',
   },
 
