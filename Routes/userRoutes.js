@@ -6,11 +6,11 @@ const router = express.Router();
 
 // Users
 
-router.route('/signup').post(authController.signup);
-router.route('/login').post(authController.login);
+router.post('/signup', authController.signup);
+router.route('/login', authController.login);
 
-router.route('/forgotPassword').post(authController.login);
-router.route('/resetPassword').post(authController.login);
+router.post('/forgotPassword', authController.forgotPassword);
+router.post('/resetPassword', authController.resetPassword);
 
 router
   .route('/')

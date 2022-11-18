@@ -96,6 +96,12 @@ userSchema.methods.createPasswordResetToken = function () {
     .createHash('sha256') // kullanılacak algorıtma
     .update(resetToken) // neyın update edileceğini belirityoruz
     .digest('hex'); // kullanılacak string
+
+  console.log({ resetToken }, this.passwordResetToken);
+  // EXPIRES
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
 };
 
 // unutma modellar büyük harfle belirtilir (genel kural)
