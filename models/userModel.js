@@ -61,6 +61,14 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// ALERT reset password middleware =>  // 3) Update changePasswordAt property for the user
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 // IMPORTANT LESSON
 // Kullnacının girdiği password ile encrypt edilmiş passwordu karşılaştırma
 // Instance method kullancagız => tum dokumanlarda kullanılabilir olan bir method
