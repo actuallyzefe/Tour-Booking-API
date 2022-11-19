@@ -89,7 +89,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
 };
 
 userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString('hex'); // reset tokeınımız cyrptografık olarak normal password token akdar guclu olmak zorunda degıl (pasword hash)
+  const resetToken = crypto.randomBytes(32).toString('hex'); // reset tokeınımız cyrptografık olarak normal password token kadar guclu olmak zorunda degıl (pasword hash)
 
   // ENCRYPT
   this.passwordResetToken = crypto
