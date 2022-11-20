@@ -14,6 +14,22 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+// UPDATING USER DATA
+exports.updateMe = (req, res, next) => {
+  // 1) Create Error if user POSTs password data
+  if (req.body.password || req.body.passwordConfirm) {
+    return new appError(
+      'This route is not for update Passwords. Please try  /updateMyPassword',
+      400
+    );
+  }
+  // 2) Update User Document
+  res.status(200).json({
+    status: 'Success',
+  });
+};
+
 exports.getSpesificUser = (req, res) => {
   res.status(500).json({
     status: 'ERROR',
