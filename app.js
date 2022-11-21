@@ -9,9 +9,11 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 
+// ERRORS
 const appError = require('./utils/appError');
 const globalErrorHandler = require('./Controllers/errorController');
 
+// ROUTES
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
 
