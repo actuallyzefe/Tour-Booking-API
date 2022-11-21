@@ -7,6 +7,32 @@ const mongoose = require('mongoose');
 // Tıpkı OOP js gibi class oluşturur gibi yaptık bir şema oluşturduk
 const tourSchema = new mongoose.Schema(
   {
+    // DATA MODELING
+    startLocation: {
+      // geoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+
     name: {
       type: String,
       required: [true, 'A tour must have a name'],
