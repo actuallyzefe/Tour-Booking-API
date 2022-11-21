@@ -48,6 +48,17 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   next();
 });
 
+// DELETING USER DATA // INACTIVATING DATA
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.body.id, { active: fasle });
+
+  res.status(204).json({
+    status: 'Success',
+    data: null,
+  });
+});
+
 exports.getSpesificUser = (req, res) => {
   res.status(500).json({
     status: 'ERROR',
