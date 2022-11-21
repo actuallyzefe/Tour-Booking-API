@@ -14,6 +14,18 @@ const signToken = (id) => {
 };
 // ALERT IMPORTANT COOKIE
 
+const createCookie = (res, token) => {
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+};
+
 // fonkısyn ıcerısıne cookıe refacotr yapamadım ondan dolayı cookiyi burada anlatacagım
 // COOKILER JWT SAKLAYABILECEGIMIZ ICIN COK ONEMLIDIR 3 PARAMETRE ALIR
 // COOKIE ADI // ICINDE SAKLAYACGI DATA //  COOKIE OPTIONS
@@ -30,6 +42,9 @@ const signToken = (id) => {
 
 // res.cookie('jwt', token, cookieOptions);
 
+// user.password = undefined
+
+// ALERT
 // exports.signup = catchAsync(async (req, res, next) => {
 // Data işlemi olacağından tabii ki async fonkısoyn kullanacagız
 // const newUser = await User.create(req.body); // buranın hepsi bir promise dondurecegınden onları await ile aktif ediyorz.// create() fonksıyonu ile yeni bir öğe oluştuuryorduk
@@ -62,15 +77,9 @@ exports.signup = catchAsync(async (req, res, next) => {
   //   expiresIn: process.env.JWT_EXPIRES_IN,
   // });
 
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-  };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  createCookie(res, token);
 
-  res.cookie('jwt', token, cookieOptions);
+  newUser.password = undefined;
 
   res.status(201).json({
     status: 'success',
