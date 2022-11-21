@@ -1,7 +1,7 @@
 // const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
-
+const rateLimit = require('express-rate-limit'); // AYNI IPDEN COK FAZLA REQUEST GELIRSE BU REQUESTLERI BLOCKLAYACAK
 const appError = require('./utils/appError');
 const globalErrorHandler = require('./Controllers/errorController');
 const tourRouter = require('./Routes/tourRoutes');
@@ -11,8 +11,13 @@ const app = express();
 // const mongoose = require('mongoose');
 
 // MIDDLEWARES
-
-// BUG BUG IMPORTANT BUG BUG FIX-ME
+// rate limit
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+app.use('/api', limiter);
 
 // dotEnv.config({ path: './config.env' });
 if (process.env.NODE_ENV === 'development') {
