@@ -51,10 +51,10 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 // DELETING USER DATA // INACTIVATING DATA
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.body.id, { active: false });
+  await User.findByIdAndUpdate(req.user.id, { active: false });
 
   res.status(204).json({
-    status: 'Success',
+    status: 'success',
     data: null,
   });
 });
