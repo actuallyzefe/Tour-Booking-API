@@ -75,6 +75,16 @@ userSchema.pre('save', function (next) {
   next();
 });
 
+// LESSON IMPORTANT
+// deleteting/ınactivating user yaparken sildiğimiz kullanıcının aktif kullanıcılar arasında olmasmı lazımd eıgl mı
+// bunu da query middlewareler ile yapacagız ve onun "find" methodyla yapacagız ve bu find ı regualr expression ile yapmamız gerek
+
+userSchema.pre(/^find/, function (next) {
+  // "this" points to the query
+  this.find({ active: { $ne: false } });
+  next();
+});
+
 // IMPORTANT LESSON
 // Kullnacının girdiği password ile encrypt edilmiş passwordu karşılaştırma
 // Instance method kullancagız => tum dokumanlarda kullanılabilir olan bir method
