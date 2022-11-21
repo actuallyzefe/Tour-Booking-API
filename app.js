@@ -1,17 +1,29 @@
 // const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
+
+// SECURITY
 const rateLimit = require('express-rate-limit'); // AYNI IPDEN COK FAZLA REQUEST GELIRSE BU REQUESTLERI BLOCKLAYACAK
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+
 const appError = require('./utils/appError');
 const globalErrorHandler = require('./Controllers/errorController');
+
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
 
 const app = express();
 // const mongoose = require('mongoose');
 
-// MIDDLEWARES
-// rate limit
+// GLOBAL MIDDLEWARES - SECURITY
+
+// SECURITY HTTP HEADERS
+app.use(helmet());
+
+// Limit request from same IP
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
@@ -19,10 +31,31 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+// DEVELOPMENT LOGGING
 // dotEnv.config({ path: './config.env' });
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+// BODY PARSER--READING DATA FROM BODY INTO req.body
+app.use(express.json()); // middleware
+
+// DATA Sanitization against noSQL query injection
+app.use(mongoSanitize());
+
+// DATA Sanitization against XSS
+app.use(xss());
+
+// Prevent Parameter pollution
+app.use(
+  hpp({
+    whitelist: 'duration', // whitelist ile neyin duplicate olmasına izin vereceğimizi belirliyoruz
+  })
+);
+// SERVING STATIC FILES
+app.use(express.static(`${__dirname}/public`));
+// bunu html dosylarının URLlerine erişmek için kullanırız
+
 // console.log(process.env.NODE_ENV);
 
 // Database e save etmek için. save() kullandık bu bir promise return eder ve onu de then ile handle ettık ılerıde async awat de kullanabılırız
@@ -37,12 +70,8 @@ if (process.env.NODE_ENV === 'development') {
 
 ///////////////////////
 //////////////////////
-//APP MIDDLEWARES
-app.use(express.json()); // middleware
 
-app.use(express.static(`${__dirname}/public`));
-// bunu html dosylarının URLlerine erişmek için kullanırız
-
+// TEST MIDDLEWARES
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers);
