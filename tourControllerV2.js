@@ -61,4 +61,4 @@ query = query.skip(skip).limit(limit); // skip methodu kac sayfa atlanacagını 
 // EXECUDE QUERY
 const tours = await query;
 
-// fix
+// fix +
