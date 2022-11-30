@@ -119,7 +119,7 @@ const tourSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.ObjectId, //Basic String veya Number olamsını istemiyoruzz mongoDB idsi olsun istiyoruz
         ref: User, // yukarıda userModel i import etmesek de calısır * ref: User*
-      },
+      }, // daha önce .pre ile yazdıgımız koddan tek farkı idsi girilen userları gostermemek onu da populating ile çözeceğiz
     ],
   },
   {
