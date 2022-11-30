@@ -122,7 +122,7 @@ const tourSchema = new mongoose.Schema(
         ref: User, // yukarıda userModel i import etmesek de calısır * ref: User*
       }, // daha önce .pre ile yazdıgımız koddan tek farkı idsi girilen userları gostermemek onu da populating ile çözeceğiz
       // ayrıca aşağıda yaptıgımız kod embedding üzerine dayılydı bu child referencing
-      // populate i getSpesificTour üzerine yaptık ama unutma çok fazla populte kullanmak performansı etkile
+      // populate i query middleware olarak yazdık
     ],
   },
   {
@@ -189,6 +189,14 @@ tourSchema.post('save', function (doc, next) {
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now(); // ne kadar surudugnu gorebılmek ıcın milisanıye cınsınden yarattık oylesıne
+  next();
+});
+// IMPORTANT
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
 
