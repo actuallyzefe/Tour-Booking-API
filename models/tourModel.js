@@ -145,6 +145,15 @@ tourSchema.virtual('durationWeeks').get(function () {
 // IMPORTANT IMPORTANT IMPORTANT
 // durationWeeks i HİÇBİR ŞEKİLDE BİR QUERY OLARAK KULLANAMYIZ CUNKU BU DATABASEIMIZDE YER ALAN BİR ŞEY DEGIL
 
+// IMPORTANT LESSON IMPORTANT
+// Virtual P
+tourSchema.virtual('reviews', {
+  // VIRTUAL POPULATE => DETAYLI BILGI DEFTERDE
+  ref: 'Review', // name of the model
+  foreignField: 'tour', // // hangi dataset ile yapacagımızı yazdık
+  localField: '_id', // tour idsinin nerede bulundugnu yazdık
+});
+
 // LESSON
 // mongooseda da middlewarelar vardır (middleware => iki event arası olayları kontrol etmek)
 // Document Middleware runs before .save() AND .create()
