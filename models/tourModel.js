@@ -114,6 +114,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    guides: Array,
   },
   {
     toJSON: {
@@ -150,11 +151,11 @@ tourSchema.pre('save', (next) => {
 
 // IMPORTANT LESSON EMBEDDING
 // Yeni tur yaratırken o turun rehberinin kim olacagını idlerle belirttik ve idleri embed ettik => böylelikle rehberler hakkındaki tüm bilgiler dataya dahil oldu
-// tourSchema.pre('save', async function (next) {
-//   const guidesPromises = this.guide.map(async (id) => await User.findById(id)); // girilen datalar bir array olacagından map kullandık
-//   this.guide = await Promise.all(guidesPromises);
-//   next();
-// });
+tourSchema.pre('save', async function (next) {
+  const guidesPromises = this.guides.map(async (id) => await User.findById(id)); // girilen datalar bir array olacagından map kullandık
+  this.guides = await Promise.all(guidesPromises);
+  next();
+});
 
 // post middlewareları ise butun pre mwler çalıştıktan sonra çalışacaktır.
 // ve post mwler onceden biten finishd documantları parametre olarak alabilirler
