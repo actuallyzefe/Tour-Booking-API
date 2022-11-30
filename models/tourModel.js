@@ -1,8 +1,9 @@
 // const { string } = require('i/lib/util');
-
+const User = require('./userModel');
 const slugify = require('slugify');
 const validator = require('validator');
 const mongoose = require('mongoose');
+const { promises } = require('nodemailer/lib/xoauth2');
 // database imizi mongoose a express ile bağladıktan sonra Model oluştuduk
 // Tıpkı OOP js gibi class oluşturur gibi yaptık bir şema oluşturduk
 const tourSchema = new mongoose.Schema(
@@ -146,6 +147,14 @@ tourSchema.pre('save', (next) => {
   console.log('AYNI HOOKTA 1DEN FAZLA PRE VE POST MWSİ OLABİLİR');
   next();
 });
+
+// IMPORTANT LESSON EMBEDDING
+// Yeni tur yaratırken o turun rehberinin kim olacagını idlerle belirttik ve idleri embed ettik => böylelikle rehberler hakkındaki tüm bilgiler dataya dahil oldu
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guide.map(async (id) => await User.findById(id)); // girilen datalar bir array olacagından map kullandık
+//   this.guide = await Promise.all(guidesPromises);
+//   next();
+// });
 
 // post middlewareları ise butun pre mwler çalıştıktan sonra çalışacaktır.
 // ve post mwler onceden biten finishd documantları parametre olarak alabilirler
