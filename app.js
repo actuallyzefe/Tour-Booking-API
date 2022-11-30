@@ -16,6 +16,7 @@ const globalErrorHandler = require('./Controllers/errorController');
 // ROUTES
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
+const reviewRouter = require('./Routes/reviewRoutes');
 
 const app = express();
 // const mongoose = require('mongoose');
@@ -233,6 +234,7 @@ app.use((req, res, next) => {
 // mounting rout
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 // LESSON
 app.all('*', (req, res, next) => {
