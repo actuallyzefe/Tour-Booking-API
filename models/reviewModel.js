@@ -37,6 +37,16 @@ const reviewSchema = new mongoose.Schema(
     },
   }
 );
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'tour',
+    select: 'name',
+  }).populate({
+    path: 'user',
+    select: 'name',
+  }); // tourModelde de aynısını yapmıştık fakat orada istemediğimiz için - koyduk :)
+  next();
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 
