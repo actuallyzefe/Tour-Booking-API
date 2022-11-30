@@ -184,7 +184,10 @@ exports.getSpesificTour = catchAsync(async (req, res, next) => {
 
   // GUARD
 
-  const tour = await Tour.findById(req.params.id).populate('guides');
+  const tour = await Tour.findById(req.params.id).populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
 
   if (!tour) {
     return next(new appError('No tour found with that ID', 404));
