@@ -2,6 +2,7 @@ const express = require('express');
 const tourController = require('./../Controllers/tourController');
 const router = express.Router();
 const authController = require('./../Controllers/authController');
+const reviewController = require('./../Controllers/reviewController');
 
 // param middleware 5tane değer alır ve daha öcne yarattıgımız guard clasue gorevı gorur
 // router.param('id', tourController.checkId);
@@ -37,4 +38,14 @@ router
     tourController.deleteTour
   );
 
+// LESSON
+// nested routes
+
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo('user'),
+    reviewController.createReview
+  );
 module.exports = router;
