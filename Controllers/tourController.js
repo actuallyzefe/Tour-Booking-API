@@ -199,34 +199,35 @@ exports.getSpesificTour = catchAsync(async (req, res, next) => {
 });
 
 // REFACTORING POST
-exports.createTour = catchAsync(async (req, res, next) => {
-  // // Daha çncesinde classlara benzer sekılde şemalar olusturup onalra gore de documentler olusturmustuk
-  //   // şimdi onun daha basit halini görecegız
-  //   try {
-  //     const newTour = await Tour.create(req.body); // Bu fonksıyon bir promise donduurr bunu then ile handle etmek yerıne butun fonskıyonu async await fonkısyonu halıne getırdık
-  // try {
-  //   // const newTour = new Tour({})
-  //   // newTour.save()
+exports.createTour = factory.createOne(Tour);
+// exports.createTour = catchAsync(async (req, res, next) => {
+//   // // Daha çncesinde classlara benzer sekılde şemalar olusturup onalra gore de documentler olusturmustuk
+//   //   // şimdi onun daha basit halini görecegız
+//   //   try {
+//   //     const newTour = await Tour.create(req.body); // Bu fonksıyon bir promise donduurr bunu then ile handle etmek yerıne butun fonskıyonu async await fonkısyonu halıne getırdık
+//   // try {
+//   //   // const newTour = new Tour({})
+//   //   // newTour.save()
 
-  // } catch (err) {
-  //   res.status(400).json({
-  //     status: 'fail',
-  //     message: err,
-  //   });
-  // }
+//   // } catch (err) {
+//   //   res.status(400).json({
+//   //     status: 'fail',
+//   //     message: err,
+//   //   });
+//   // }
 
-  // kodları comment out yaptık cunku try catch kullanmak yerıne catchAsync adında bır errorhandler yaı-ptık ve başka bir dosya olusturudk
+//   // kodları comment out yaptık cunku try catch kullanmak yerıne catchAsync adında bır errorhandler yaı-ptık ve başka bir dosya olusturudk
 
-  const newTour = await Tour.create(req.body); // burası yukarıda da yazıyordu hızlıca comment yaparken onu da etmısım
-  // burada Tour schemasınını kullanak ve ona ait create() fonksıyonunu kullanarak request elemanına ait bodynin içindeki dataları kullanarak yeni kullancıyı await ettik
+//   const newTour = await Tour.create(req.body); // burası yukarıda da yazıyordu hızlıca comment yaparken onu da etmısım
+//   // burada Tour schemasınını kullanak ve ona ait create() fonksıyonunu kullanarak request elemanına ait bodynin içindeki dataları kullanarak yeni kullancıyı await ettik
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+//   res.status(201).json({
+//     status: 'success',
+//     data: {
+//       tour: newTour,
+//     },
+//   });
+// });
 // const newId = tours[tours.length - 1].id + 1;
 // const newTour = Object.assign({ id: newId }, req.body);
 // tours.push(newTour);
@@ -241,23 +242,7 @@ exports.createTour = catchAsync(async (req, res, next) => {
 // // console.log(newTour)
 
 // REFACTORING UPDATE // PATCH
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!tour) {
-    return next(new appError('No tour found with that ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
+exports.updateTour = factory.updateOne(Tour);
 
 // REFACTORING DELETE
 exports.deleteTour = factory.deleteOne(Tour);

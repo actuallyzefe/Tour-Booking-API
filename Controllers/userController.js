@@ -72,11 +72,10 @@ exports.createUser = (req, res) => {
     message: 'This route not implemented',
   });
 };
+
+// IMPORTANT buradaki delete ve update fonksıyonları sadece admınler ıcındır yukarıdakılerde kullancı kendını databaseden silmez sadece deactive yapar
+// veya update olarak da kendı şifresini vesaire update eder.
+// IMPORTANT ALERT VE BUNUNLA PASSWORD KESINLIKLE UPDATE EDILMEMELIDIR
 exports.deleteUser = factory.deleteOne(User);
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'ERROR',
-    message: 'This route not implemented',
-  });
-};
+exports.updateUser = factory.updateOne(User);
