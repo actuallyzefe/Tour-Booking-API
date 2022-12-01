@@ -2,7 +2,23 @@ const express = require('express');
 const tourController = require('./../Controllers/tourController');
 const router = express.Router();
 const authController = require('./../Controllers/authController');
-const reviewController = require('./../Controllers/reviewController');
+// const reviewController = require('./../Controllers/reviewController');
+const reviewRouter = require('./../Routes/reviewRoutes');
+
+// LESSON
+// nested routes
+
+// router
+//   .route('/:tourId/reviews')
+//   .post(
+//     authController.protect,
+//     authController.restrictTo('user'),
+//     reviewController.createReview
+//   );
+// LESSON
+router.use('/:tourId/reviews', reviewRouter); // burada eğer tourRouterımız böyle bir route ile karşılaşırsa reviewRouter ı kullanması gerektiğini söyledik
+// Basicly  app.js de yaptıgımız route mounting ile aynı şey.
+// Ama hala eksik olan şey ise reviewRouter ın tourId parametresine erişimi olmamasıdır. Bunu da reviewRoutes'da mergeParams ile halledeceğiz
 
 // param middleware 5tane değer alır ve daha öcne yarattıgımız guard clasue gorevı gorur
 // router.param('id', tourController.checkId);
@@ -38,14 +54,4 @@ router
     tourController.deleteTour
   );
 
-// LESSON
-// nested routes
-
-router
-  .route('/:tourId/reviews')
-  .post(
-    authController.protect,
-    authController.restrictTo('user'),
-    reviewController.createReview
-  );
 module.exports = router;
