@@ -1,7 +1,7 @@
 'use strict';
 const catchAsync = require('../utils/catchAsync');
 const appError = require('../utils/appError');
-
+const factory = require('./handlerFactory');
 const fs = require('fs');
 
 exports.aliasTopTours = (req, res, next) => {
@@ -260,19 +260,21 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 
 // REFACTORING DELETE
-exports.deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
+exports.deleteTour = factory.deleteOne(Tour);
 
-  if (!tour) {
-    return next(new appError('No tour found with that ID', 404));
-  }
+// exports.deleteTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
 
-  res.status(204).json({
-    status: 'success',
-    message: 'Tour deleted!',
-    data: null,
-  });
-});
+//   if (!tour) {
+//     return next(new appError('No tour found with that ID', 404));
+//   }
+
+//   res.status(204).json({
+//     status: 'success',
+//     message: 'Tour deleted!',
+//     data: null,
+//   });
+// });
 
 // exports.checkBody = (req, res, next) => {
 //   if (!req.body.name || !req.body.price) {
