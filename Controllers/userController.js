@@ -14,9 +14,9 @@ const filterObj = (obj, ...allowedFields) => {
 exports.getAllUsers = factory.getAll(User);
 
 // IMPORTANT => get me aslında getSpesific ile aynı fonksıyonu kullanıyor bu sadece bir middleware
-// neden bu middleware e ihtiyac duyduk => kullanıcnı kedni idsini url e girmesin diye Log in yaptığı anda bunu otomatık hale getırdık
+// neden bu middleware e ihtiyac duyduk => kullanıcnı kendi idsini url e girmesin diye Log in yaptığı anda bunu otomatık hale getırdık
 exports.getMe = (req, res, next) => {
-  req.params.id = req.user.id; // AuthController kısmında user infosunu çekebiliyorduk
+  req.params.id = req.user.id; // AuthController kısmında user infosunu çekebiliyorduk => exports.protect kısmının sonunda hazırladık
   next();
 };
 
