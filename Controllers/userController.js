@@ -11,17 +11,7 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 // USERS
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: 'Success',
-    results: users.lenght,
-    data: {
-      users,
-    },
-  });
-});
+exports.getAllUsers = factory.getAll(User);
 
 // UPDATING USER DATA
 exports.updateMe = catchAsync(async (req, res, next) => {
@@ -60,16 +50,12 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getSpesificUser = (req, res) => {
-  res.status(500).json({
-    status: 'ERROR',
-    message: 'This route not implemented',
-  });
-};
+exports.getSpesificUser = factory.getSpesific(User);
+
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'ERROR',
-    message: 'This route not implemented',
+    message: 'This route not implemented! Please use /signUp',
   });
 };
 
