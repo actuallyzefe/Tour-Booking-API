@@ -20,7 +20,13 @@ router
 router
   .route('/:id')
   .get(reviewController.getSpesificReview)
-  .delete(reviewController.deleteReview)
-  .patch(reviewController.updateReview);
+  .delete(
+    authController.restrictTo('user', 'adming'),
+    reviewController.deleteReview
+  )
+  .patch(
+    authController.restrictTo('user', 'adming'),
+    reviewController.updateReview
+  );
 
 module.exports = router;

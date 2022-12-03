@@ -135,6 +135,11 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// IMPORTANT LESSON ALERT
+// defterde yazıyor => INDEXES
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // LESSON
 // Virtual Properties => are basicly fields that we can define on our schema but tyhey will not be persisted
 // so they will not be saved into the database in order to save us some space there
