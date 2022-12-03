@@ -5,6 +5,8 @@ const router = express.Router({ mergeParams: true }); // mergeParams ı bununiç
 const authController = require('./../Controllers/authController');
 const reviewController = require('./../Controllers/reviewController');
 
+router.use(authController.protect);
+
 router
   .route('/')
   .get(reviewController.getAllReviews)

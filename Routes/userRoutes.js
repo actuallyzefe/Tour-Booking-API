@@ -12,22 +12,34 @@ router.route('/login').post(authController.login);
 router.route('/forgotPassword').post(authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
+// IMPORTANT LESSON ALERT
+// bu noktadan sonraki butun oruseların protected olmasını istiyoruz
+// hepsine tek tke protect eklemek yerıne middlewareların özelliğini kullanalım
+// middlewarelar sırayla çalıştığından router.use kodudundan ıtıbaren tum satırlar protected oldu
+router.use(authController.protect);
+
 router.get(
   '/me',
-  authController.protect,
+
   userController.getMe,
   userController.getSpesificUser
 );
 
-router.patch('/updateMe', authController.protect, userController.updateMe);
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
 
 router.patch(
   '/updateMyPassword',
-  authController.protect,
+
   authController.updatePassword
 );
 
+// IMPORTANT LESSON ALERT
+// bu noktadan sonraki butun oruseların protected olmasını istiyoruz
+// hepsine tek tke protect eklemek yerıne middlewareların özelliğini kullanalım
+// middlewarelar sırayla çalıştığından router.use kodudundan ıtıbaren tum satırlar protected oldu
+
+router.use(authController.restrictTo('admin'));
 router
   .route('/')
   .get(userController.getAllUsers)
