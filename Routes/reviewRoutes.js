@@ -21,11 +21,11 @@ router
   .route('/:id')
   .get(reviewController.getSpesificReview)
   .delete(
-    authController.restrictTo('user', 'adming'),
+    authController.restrictTo('user', 'admin'),
     reviewController.deleteReview
   )
   .patch(
-    authController.restrictTo('user', 'adming'),
+    authController.restrictTo('user', 'admin'),
     reviewController.updateReview
   );
 
