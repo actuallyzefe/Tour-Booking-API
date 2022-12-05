@@ -84,6 +84,14 @@ reviewSchema.post('save', function () {
   this.constructor.calcAverageRatings(this.tour); // model uzerınden cagırdıktan sonra tourId yi pass ettik
 });
 
+// IMPORTANT ALERT
+// findByIdAndUpdate BUNLARI HER REVIEW SILINDIGINDE VE UPDATE EDILDIGINDE KULLANABILMEMIZ GEFEK
+// findByIdAndDelete  => bu ikisini query middlewarelarda kullanamayaız ama bunu aşmak için ufak bir trick yapacağoz
+reviewSchema.post(/^findOneAnd/, async function (doc) {
+  await doc.constructor.calcAverageRatings(doc.tour);
+  console.log(doc);
+});
+
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
