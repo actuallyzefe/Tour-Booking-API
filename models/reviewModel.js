@@ -70,11 +70,11 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
   console.log(stats);
 };
 
-reviewSchema.pre('save', function (next) {
+reviewSchema.post('save', function () {
+  // UNUTMA POST MIDDLEWARE NEXT() KULLANMAZ
   // this => current review
   // bu MW'de calcAverae ı her save ettıgımızde call edecek ama revıew uzerınden ona ulasmaayız boyle durumlarda thıs.constructor kullanılır
   this.constructor.calcAverageRatings(this.tour); // model uzerınden cagırdıktan sonra tourId yi pass ettik
-  next();
 });
 
 const Review = mongoose.model('Review', reviewSchema);
