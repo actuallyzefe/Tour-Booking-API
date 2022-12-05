@@ -71,10 +71,17 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
   console.log(stats);
 
   // UPDATE TOUR
-  await Tour.findByIdAndUpdate(tourId, {
-    ratingsQuantity: stats[0].nReviews, // STATS aggregate kullanıyor o da bir array oldugundan 0. indexdekı ısteıgımız degerlerı aldıkı
-    ratingsAverage: stats[0].avgRating, // STATS aggregate kullanıyor o da bir array oldugundan 0. indexdekı ısteıgımız degerlerı aldıkı
-  });
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nReviews, // STATS aggregate kullanıyor o da bir array oldugundan 0. indexdekı ısteıgımız degerlerı aldıkı
+      ratingsAverage: stats[0].avgRating, // STATS aggregate kullanıyor o da bir array oldugundan 0. indexdekı ısteıgımız degerlerı aldıkı
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
 };
 
 reviewSchema.post('save', function () {
@@ -86,7 +93,7 @@ reviewSchema.post('save', function () {
 
 // IMPORTANT ALERT
 // findByIdAndUpdate BUNLARI HER REVIEW SILINDIGINDE VE UPDATE EDILDIGINDE KULLANABILMEMIZ GEFEK
-// findByIdAndDelete  => bu ikisini query middlewarelarda kullanamayaız ama bunu aşmak için ufak bir trick yapacağoz
+// findByIdAndDelete  => bu ikisini query middlewarelarda kullanamayaız
 reviewSchema.post(/^findOneAnd/, async function (doc) {
   await doc.constructor.calcAverageRatings(doc.tour);
   console.log(doc);
