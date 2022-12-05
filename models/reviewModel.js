@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 // review / rating / createdAt / ref to tour / ref to user
 const reviewSchema = new mongoose.Schema(
@@ -68,6 +69,12 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
   ]);
   // ALERT BU FONSKIYONUN SUREKLI KENDINI GUNCELLEMESI YANI OTOMATIK CALL ETMESI GEREK ONU DA MIDDLEWARE ILE YAPACAGIZ ⬇
   console.log(stats);
+
+  // UPDATE TOUR
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsQuantity: stats[0].nReviews, // STATS aggregate kullanıyor o da bir array oldugundan 0. indexdekı ısteıgımız degerlerı aldıkı
+    ratingsAverage: stats[0].avgRating, // STATS aggregate kullanıyor o da bir array oldugundan 0. indexdekı ısteıgımız degerlerı aldıkı
+  });
 };
 
 reviewSchema.post('save', function () {
