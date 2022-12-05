@@ -45,6 +45,38 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
+//  LESSON ratingAverage hesaplama
+// static methodu kullancagız (daha once ınstance kullandık [modul export edıyoruyzz] )
+// ASIL AMACIMIZ TOUR IDSI UZERINEN HER BIR REVIEW GIRILDIGINDE / SILINDIGINDE / UPDATE EDILDIGINDE O ORTALAMAYI GUNCELLEMEK
+// BUNU AGGREGATION PIPELINE ILE SAGLAYABILIRIZ
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  // this points => currentModel => aggregate zaten model uzerıne cagırılır
+  // aggreagtion pipeline kullanımı tourController dosyasında mevcut
+  const stats = await this.aggregate([
+    {
+      $match: {
+        tour: tourId,
+      },
+    },
+    {
+      $group: {
+        _id: '$tour', // neye gore sıralacagımızı belırledık
+        nReviews: { $sum: 1 }, // number of Ratings => add 1 for each tour that was matched
+        avgRating: { $avg: '$rating' }, // averaj hesaplamak için avg operatorunu kullandık daha sonrada neyın a veragını ıstedıımgız fıled ı yazdık
+      },
+    },
+  ]);
+  // ALERT BU FONSKIYONUN SUREKLI KENDINI GUNCELLEMESI YANI OTOMATIK CALL ETMESI GEREK ONU DA MIDDLEWARE ILE YAPACAGIZ ⬇
+  console.log(stats);
+};
+
+reviewSchema.pre('save', function (next) {
+  // this => current review
+  // bu MW'de calcAverae ı her save ettıgımızde call edecek ama revıew uzerınden ona ulasmaayız boyle durumlarda thıs.constructor kullanılır
+  this.constructor.calcAverageRatings(this.tour); // model uzerınden cagırdıktan sonra tourId yi pass ettik
+  next();
+});
+
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
