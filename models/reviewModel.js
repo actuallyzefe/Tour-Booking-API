@@ -38,6 +38,12 @@ const reviewSchema = new mongoose.Schema(
     },
   }
 );
+// LESSON
+// HER KULLANICININ BIR TUR ICIN 1 YORUMU OLABILIR
+// BUNU DA INDEXLERLE BELIRTIYORUZ
+// INDEX IN 2.PARAMETREDSI OLARAK OPTIONS GELIYOR BUNU DA UNIQUE YAPYIROUZ
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'user',
