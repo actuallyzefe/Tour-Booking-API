@@ -38,6 +38,7 @@ const tourSchema = new mongoose.Schema(
     ratingsAverage: {
       type: Number,
       default: 4.5,
+      set: (val) => Math.round((val * 10) / 10), // set her yeni bir value geldıgınde calısır => callback fonksıyonu olustururuz biz şimdi ratingleri yuvarlama hesabı yapacagız
     },
     ratingsQuantity: {
       type: Number,
