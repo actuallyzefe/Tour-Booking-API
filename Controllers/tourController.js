@@ -311,7 +311,8 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     next(new appError('please enter valid location', 400));
   }
 
-  const radius = s;
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1; // km ve mil cinsinden dunyanın radius u
+
   console.log(distance, lat, lng, unit);
 
   // LESSON
@@ -325,6 +326,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'Success',
+    results: tours.length,
     data: {
       tours,
     },

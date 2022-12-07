@@ -140,6 +140,7 @@ const tourSchema = new mongoose.Schema(
 // defterde yazıyor => INDEXES
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 // LESSON
 // Virtual Properties => are basicly fields that we can define on our schema but tyhey will not be persisted
