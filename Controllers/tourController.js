@@ -302,3 +302,31 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   });
 });
 //.
+
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params; // destructre kullandık (ES6 syntax) => req.params.distance etc.
+  const [lat, lng] = latlng.split(','); // lat ve lng değerleri "," ile ayrılan değerler ve burada da tek seferde olması için destructre kulladnık
+
+  if (!lat || !lng) {
+    next(new appError('please enter valid location', 400));
+  }
+
+  const radius = s;
+  console.log(distance, lat, lng, unit);
+
+  // LESSON
+  // find() ın içerinse filter Objectimizi koyuyoruz => burası biraz karmaşık ama sürekli kullanacagımız bir şey değil
+  // IMPORTANT öncelikle startLocation üzerine koymak ıstedıgımızı belırttık daha sonrasında geoSpatial opertorlerınden geoWithin kullandık
+  // geoWithin am olarak kelime karşılığını yapıyor içerisine => finds documents within a certain geometry
+  // and that geometry is what we are going to add in next step => $centerShpere
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerShpere: [[lng, lat], radius] } },
+  });
+
+  res.status(200).json({
+    status: 'Success',
+    data: {
+      tours,
+    },
+  });
+});

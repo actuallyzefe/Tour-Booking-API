@@ -2,8 +2,8 @@ const express = require('express');
 const tourController = require('./../Controllers/tourController');
 const router = express.Router();
 const authController = require('./../Controllers/authController');
-// const reviewController = require('./../Controllers/reviewController');
 const reviewRouter = require('./../Routes/reviewRoutes');
+// const reviewController = require('./../Controllers/reviewController');
 
 // LESSON
 // nested routes
@@ -44,6 +44,14 @@ router
     authController.restrictTo('admin', 'lead-guide', 'guide'),
     tourController.getMonthlyPlan
   );
+
+// IMPORTANT LESSON ALERT => GEOSPATIAL PART
+// tours-within/:distance/ => şu mesafe içerisindeki turlar
+// center/:latlng kişisel konumum
+// unit/:unit => KM - MIle
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);
 
 router
   .route('/')
