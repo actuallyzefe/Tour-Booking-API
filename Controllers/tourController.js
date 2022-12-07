@@ -319,9 +319,9 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   // find() ın içerinse filter Objectimizi koyuyoruz => burası biraz karmaşık ama sürekli kullanacagımız bir şey değil
   // IMPORTANT öncelikle startLocation üzerine koymak ıstedıgımızı belırttık daha sonrasında geoSpatial opertorlerınden geoWithin kullandık
   // geoWithin am olarak kelime karşılığını yapıyor içerisine => finds documents within a certain geometry
-  // and that geometry is what we are going to add in next step => $centerShpere
+  // and that geometry is what we are going to add in next step => $centerSphere
   const tours = await Tour.find({
-    startLocation: { $geoWithin: { $centerShpere: [[lng, lat], radius] } },
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
   });
 
   res.status(200).json({
