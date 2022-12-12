@@ -265,7 +265,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 // SIFREYI UNUTMADAN SIFRE DEGISTIRME
-
 exports.resetPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on the token
   const hashedToken = crypto
@@ -280,7 +279,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   // 2) If token has not expired, and there is user, set the new password
   if (!user) {
-    return next(new AppError('Token is invalid or has expired', 400));
+    return next(new appError('Token is invalid or has expired', 400));
   }
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
