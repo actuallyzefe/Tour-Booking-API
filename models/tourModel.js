@@ -229,13 +229,14 @@ tourSchema.post(/^find/, function (docs, next) {
 // LESSON
 // AGGREGATION MWs
 // Aggregation MWs => allows us to add hooks before or after an aggregegation executed.
-tourSchema.pre('aggregate', function (next) {
-  // unshift kullanarak pipeline ın başına yenı stage ekliyoruz o da secretTour olacak
-  // böylelikle Toplan Tur sayısını vesaire (Tour stats-postman) gösterirken secretTourlar dahil olmayacak
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  console.log(this.pipeline());
-  next();
-});
+
+// tourSchema.pre('aggregate', function (next) {
+//   // unshift kullanarak pipeline ın başına yenı stage ekliyoruz o da secretTour olacak
+//   // böylelikle Toplan Tur sayısını vesaire (Tour stats-postman) gösterirken secretTourlar dahil olmayacak
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline());
+//   next();
+// });
 
 // Burada oluştududğumuz şemalara uygun documentler oluşturduk
 const Tour = mongoose.model('Tour', tourSchema);
