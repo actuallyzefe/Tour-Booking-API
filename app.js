@@ -1,6 +1,7 @@
 // const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 
 // SECURITY
 const rateLimit = require('express-rate-limit'); // AYNI IPDEN COK FAZLA REQUEST GELIRSE BU REQUESTLERI BLOCKLAYACAK
@@ -13,13 +14,24 @@ const hpp = require('hpp');
 const appError = require('./utils/appError');
 const globalErrorHandler = require('./Controllers/errorController');
 
+const app = express();
+// const mongoose = require('mongoose');
+
+// PUG TEMPLATE // IMPORTANT ALERT
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+// SERVING STATIC FILES
+app.use(express.static(path.join(__dirname, 'public')));
+
 // ROUTES
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
 const reviewRouter = require('./Routes/reviewRoutes');
-
-const app = express();
-// const mongoose = require('mongoose');
+// TEMPLATE RENDERING
+app.get('/', (req, res) => {
+  res.status(200).render('base'); // pug dosyamızın adı
+});
 
 // GLOBAL MIDDLEWARES - SECURITY
 
@@ -55,8 +67,7 @@ app.use(
     whitelist: 'duration', // whitelist ile neyin duplicate olmasına izin vereceğimizi belirliyoruz
   })
 );
-// SERVING STATIC FILES
-app.use(express.static(`${__dirname}/public`));
+
 // bunu html dosylarının URLlerine erişmek için kullanırız
 
 // console.log(process.env.NODE_ENV);
