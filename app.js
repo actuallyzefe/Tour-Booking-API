@@ -30,7 +30,10 @@ const userRouter = require('./Routes/userRoutes');
 const reviewRouter = require('./Routes/reviewRoutes');
 // TEMPLATE RENDERING
 app.get('/', (req, res) => {
-  res.status(200).render('base'); // pug dosyamızın adı
+  res.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'jonas',
+  }); // pug dosyamızın adı
 });
 
 // GLOBAL MIDDLEWARES - SECURITY
