@@ -28,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
 const reviewRouter = require('./Routes/reviewRoutes');
+const viewRouter = require('./Routes/viewRoutes');
 // TEMPLATE RENDERING
 app.get('/', (req, res) => {
   res.status(200).render('base', {
@@ -247,21 +248,10 @@ app.use((req, res, next) => {
 // const userRouter = express.Router();
 // mounting rout
 
-app.get('/overview', (req, res) => {
-  res.status(200).render('overview', {
-    title: 'All Tours',
-  });
-});
-app.get('/TOUR', (req, res) => {
-  res.status(200).render('tour', {
-    title: 'Forest Hiker',
-  });
-});
-
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
-
 // LESSON
 app.all('*', (req, res, next) => {
   // res.status(200).json({
