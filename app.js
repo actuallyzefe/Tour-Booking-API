@@ -9,6 +9,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 // ERRORS
 const appError = require('./utils/appError');
@@ -40,34 +42,21 @@ app.get('/', (req, res) => {
 // GLOBAL MIDDLEWARES - SECURITY
 
 // SECURITY HTTP HEADERS
+// Set security HTTP headers
 app.use(helmet());
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'", 'data:', 'blob:'],
+      defaultSrc: ["'self'", 'https:', 'http:', 'data:', 'ws:'],
       baseUri: ["'self'"],
-      fontSrc: ["'self'", 'https:', 'data:'],
-      scriptSrc: ["'self'", 'https://*.cloudflare.com'],
-      scriptSrc: ["'self'", 'https://*.stripe.com'],
-      scriptSrc: [
-        "'self'",
-        'https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js',
-      ],
-      frameSrc: ["'self'", 'https://*.stripe.com'],
-      objectSrc: ["'none'"],
-      styleSrc: ["'self'", 'https:', 'unsafe-inline'],
-      workerSrc: ["'self'", 'data:', 'blob:'],
-      childSrc: ["'self'", 'blob:'],
-      imgSrc: ["'self'", 'data:', 'blob:'],
-      connectSrc: [
-        "'self'",
-        'blob:',
-        'https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js',
-      ],
-      upgradeInsecureRequests: [],
+      fontSrc: ["'self'", 'https:', 'http:', 'data:'],
+      scriptSrc: ["'self'", 'https:', 'http:', 'blob:'],
+      styleSrc: ["'self'", 'https:', 'http:', "'unsafe-inline'"],
     },
   })
 );
+
+// Further HELMET configuration for Security Policy (CSP)
 
 // Limit request from same IP
 const limiter = rateLimit({
@@ -84,6 +73,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // BODY PARSER--READING DATA FROM BODY INTO req.body
+app.use(cookieParser());
 app.use(express.json()); // middleware
 
 // DATA Sanitization against noSQL query injection
@@ -119,7 +109,7 @@ app.use(
 // TEST MIDDLEWARES
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  // console.log(req.headers);
+  console.log(req.cookies);
   next();
 });
 

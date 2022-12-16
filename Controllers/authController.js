@@ -98,14 +98,14 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // 1) Check if email and password exists
   if (!email || !password) {
-    return next(new appError('Please provide an email or password'), 400);
+    return next(new appError('Please provide an email or password', 400));
   }
   // 2) Check if user exists and password is correct
   const user = await User.findOne({ email: email }).select('+password'); //database e leak etmedik burada explcit olarak belirttik
   // const correct = await user.correctPassword(password, user.password); //
 
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new appError('Incorrect email or password'), 401);
+    return next(new appError('Incorrect email or password', 401));
   }
 
   // 3) If everything ok, send token to client
@@ -158,14 +158,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   //3) Check if user exists
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
-    return next(new appError('the user no longer exists'), 401);
+    return next(new appError('the user no longer exists', 401));
   }
   console.log(currentUser);
 
   //4) Check if user changed password after the token was issued
   // burada ise önce instance olarak userModel a yazacagız
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(new appError('USER RECENTLY CHANGED PASSWORD'), 401);
+    return next(new appError('USER RECENTLY CHANGED PASSWORD', 401));
   } // iat => issued At
 
   // GRANT ACCESS TO PROTECTED ROUTES
