@@ -252,6 +252,11 @@ app.get('/overview', (req, res) => {
     title: 'All Tours',
   });
 });
+app.get('/TOUR', (req, res) => {
+  res.status(200).render('tour', {
+    title: 'Forest Hiker',
+  });
+});
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
