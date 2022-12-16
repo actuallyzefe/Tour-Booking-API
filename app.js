@@ -41,6 +41,33 @@ app.get('/', (req, res) => {
 
 // SECURITY HTTP HEADERS
 app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'", 'data:', 'blob:'],
+      baseUri: ["'self'"],
+      fontSrc: ["'self'", 'https:', 'data:'],
+      scriptSrc: ["'self'", 'https://*.cloudflare.com'],
+      scriptSrc: ["'self'", 'https://*.stripe.com'],
+      scriptSrc: [
+        "'self'",
+        'https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js',
+      ],
+      frameSrc: ["'self'", 'https://*.stripe.com'],
+      objectSrc: ["'none'"],
+      styleSrc: ["'self'", 'https:', 'unsafe-inline'],
+      workerSrc: ["'self'", 'data:', 'blob:'],
+      childSrc: ["'self'", 'blob:'],
+      imgSrc: ["'self'", 'data:', 'blob:'],
+      connectSrc: [
+        "'self'",
+        'blob:',
+        'https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js',
+      ],
+      upgradeInsecureRequests: [],
+    },
+  })
+);
 
 // Limit request from same IP
 const limiter = rateLimit({
