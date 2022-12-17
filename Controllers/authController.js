@@ -147,8 +147,9 @@ exports.protect = catchAsync(async (req, res, next) => {
     // Eğeer ki bunların 2side mevcutsa token tanımlanacak
   ) {
     token = req.headers.authorization.split(' ')[1]; // Auth valuesu postmnada Bearer ve Token şeklindeydi Boşlukla ayrılanları alıp arrye koyduk ve  arrayın 2. elemaını seçtik(orijinal tokeny)
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
-
   if (!token) {
     return next(
       new appError('You are not logged in! Please log in to get access.', 401)
