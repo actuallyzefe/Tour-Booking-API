@@ -189,6 +189,35 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+// IMPORTANT LESSON ALERT => bu middleware ise kullancının logged in olup olmadıgına bakıp sayfanın navbar kısmını render etmemıze yardım edecek
+//1) Getting token and check if it exists
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    // VERIFY TOKEN
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET,
+      () => {}
+    );
+
+    //3) Check if user exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+    //4) Check if user changed password after the token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+    // THERE IS A LOGGED IN USER
+    // res.locals ile templatelarımıza erişebiliyoruz ve ondan sonra yazacagımız her hangıb ır degısken ısmı templatelarımızda bulunuyor
+    res.locals.user = currentUser;
+    console.log(currentUser);
+    return next();
+  }
+  next();
+});
+
 // LESSON ALERT IMPORTANT
 //BURADA TOUR ROUTES A KOYDUGUMUZ DELETE ISLEMI ICIN SADECE BLEIRLI KULLANICLARIN IZINLI OLASMINI TASARLIYORUZ
 // normalde herhangi bir middleware fonkısoyna arguman pass edilmez ama burada yapmamız gerke nasıl yapacagız ?
