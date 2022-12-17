@@ -14,7 +14,8 @@ const signToken = (id) => {
 };
 // ALERT IMPORTANT COOKIE
 
-const createCookie = (res, token) => {
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -24,6 +25,17 @@ const createCookie = (res, token) => {
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', token, cookieOptions);
+
+  // Remove password from output
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
 };
 
 // fonkısyn ıcerısıne cookıe refacotr yapamadım ondan dolayı cookiyi burada anlatacagım
@@ -72,22 +84,24 @@ exports.signup = catchAsync(async (req, res, next) => {
   // d => days => m => minutes
 
   // daha fazlaca kullancagımı ıcın burayı comment out yapıp bir tokenGeneraor fonskıyonu yazdık (top level )
-  const token = signToken(newUser._id);
+  // const token = signToken(newUser._id);
   // jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
   //   expiresIn: process.env.JWT_EXPIRES_IN,
   // });
 
-  createCookie(res, token);
+  // createCookie(res, token);
 
-  newUser.password = undefined;
+  // newUser.password = undefined;
 
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  // res.status(201).json({
+  //   status: 'success',
+  //   token,
+  //   data: {
+  //     user: newUser,
+  //   },
+  // });
+
+  createSendToken(newUser, 201, res);
 });
 
 // Logging Users in => temelinde sign edilen token ın (yaratılan) kullancıya geri gödnerilip kullanıcının onu kullanmasıyla olusur
@@ -109,11 +123,12 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 3) If everything ok, send token to client
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'Success',
-    token,
-  });
+  createSendToken(user, 200, res);
+  // const token = signToken(user._id);
+  // res.status(200).json({
+  //   status: 'Success',
+  //   token,
+  // });
 });
 
 // LESSON PROTECTED ROUTES

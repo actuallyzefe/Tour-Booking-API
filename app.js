@@ -10,7 +10,6 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
 
 // ERRORS
 const appError = require('./utils/appError');
@@ -40,6 +39,9 @@ app.get('/', (req, res) => {
 });
 
 // GLOBAL MIDDLEWARES - SECURITY
+
+var cors = require('cors');
+app.use(cors({ credentials: true, origin: 'http://localhost:8000' }));
 
 // SECURITY HTTP HEADERS
 // Set security HTTP headers
