@@ -131,6 +131,14 @@ exports.login = catchAsync(async (req, res, next) => {
   // });
 });
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'null', {
+    expires: new Date(Date.now() - 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 // LESSON PROTECTED ROUTES
 // UYE GIRISI YAPMAMIS KULLANICILARIN TUM TURLARI GORUNTULEMESINI ISTEMIYORUZ => .getAllTours
 // ALERT bunun içinde bir middleware kullanıyoruz
