@@ -1,7 +1,7 @@
 # Booking API
 I built an booking api with mongoose.
 Users can select the range of distance for hotels 
-Users can post comments and review hotels and can rank with starts.
+Users can post comments and review hotels and can rank with stars.
 
 
 # How to install ?
